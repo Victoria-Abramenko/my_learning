@@ -1,0 +1,1 @@
+python = "А тут типа документация по python_lessons"
