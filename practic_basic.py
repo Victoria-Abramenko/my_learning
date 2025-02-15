@@ -4388,6 +4388,181 @@ from typing import Union, Optional, Any, Final
 #         print("Множество не соответствует требованиям")
 # # {1, 2, 3, 4, 5, 6}
 
+# #________________  match/case на примере реального использования, нюансы и ограничения  _____________________
+# def connect_db(connect:dict) -> str:
+#     match connect:
+#         case {"server" : host, "login" : login, "password" : psw, "port" : port}:
+#             return f"connection: {host}@{login}.{psw}:{port}"
+#         case {"server" : host, "login" : login, "password" : psw}:
+#             port = 22
+#             return f"connection: {host}@{login}.{psw}:{port}"
+#         case _:
+#             return "connection error"
+#
+# req = {"server" : "127.0.0.0.1", "login" : "root", "password" : "1234", "port" : 24}
+# req1 = {"server" : "127.0.0.0.1", "login" : "root", "password" : "1234"}
+# req2 = {"login" : "root", "password" : "1234", "port" : 24}
+# print(connect_db(req))  # connection: 127.0.0.0.1@root.1234:24
+# print(connect_db(req1))  # connection: 127.0.0.0.1@root.1234:22
+# print(connect_db(req2))  # connection error
+#
+# # чтобы не дублировать код, можно записать иначе, поскольку переменные продолжают существовать и вне конструкции match
+# def connect_db(connect:dict) -> str:
+#     match connect:
+#         case {"server" : host, "login" : login, "password" : psw, "port" : port}:
+#             pass  # должен быть хоть 1 оператор, иначе ошибка
+#         case {"server" : host, "login" : login, "password" : psw}:
+#             port = 22 # есть оператор, так что pass не нужен
+#         case _:
+#             return "connection error" # если сработает этот шаблон, то return завершит match
+#
+#     return f"connection: {host}@{login}.{psw}:{port}" # если сработает или первый или второй шаблон, вернется это значение
+#
+# req = {"server" : "127.0.0.0.1", "login" : "root", "password" : "1234", "port" : 24}
+# req1 = {"server" : "127.0.0.0.1", "login" : "root", "password" : "1234"}
+# req2 = {"login" : "root", "password" : "1234", "port" : 24}
+# print(connect_db(req))  # connection: 127.0.0.0.1@root.1234:24
+# print(connect_db(req1))  # connection: 127.0.0.0.1@root.1234:22
+# print(connect_db(req2))  # connection error
 
-        
-        
+# # функция для обработки разных данных - словаря, кортежа или списка. На выходе кортеж(автор, название, год, цена)
+# def book_to_tuple(data: dict | tuple | list) -> tuple | None:
+#     match data:
+#         case author, title, year, price, *_:
+#             pass
+#         case author, title, year:
+#             price = None
+#         case {"author" : author, "title" : title,"year" : year, "price" : price}: # этот шаблон должен располагаться
+#         выше, так как в словаре главное наличие ключей, поэтому тот что ниже также бы сработал и присвоил бы переменной
+#         None, хотя такой ключ есть.
+#             pass
+#         case {"author" : author, "title" : title,"year" : year}:
+#             price = None
+#         case _:
+#             return None
+#
+#     return author, title, year, price
+#
+# book1 = ("Даррен Харди", "Накопительный эффект", 2022, 500 )
+# book2 = ["Даррен Харди", "Накопительный эффект", 2022]
+# book3 = {"author" : "Даррен Харди", "title" : "Накопительный эффект", "year" : 2022, "price" : 500 }
+# book4 = {"author" : "Даррен Харди", "title" : "Накопительный эффект", "year" : 2022 }
+#
+# print(book_to_tuple(book1))
+# print(book_to_tuple(book2))
+# print(book_to_tuple(book3))
+# print(book_to_tuple(book4))
+# # ('Даррен Харди', 'Накопительный эффект', 2022, 500)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, None)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, 500)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, None)
+
+# def book_to_tuple(data: dict | tuple | list) -> tuple | None:
+#     price = None # чтобы не дублировать код, можно сразу по умолчанию задать значение None, если другой переменной
+#     # не будет сформированно
+#     match data:
+#         case author, title, year, price, *_:
+#             pass
+#         case author, title, year:
+#             pass
+#         case {"author" : author, "title" : title,"year" : year, "price" : price}:
+#             pass
+#         case {"author" : author, "title" : title,"year" : year}:
+#             pass
+#         case _:
+#             return None
+#
+#     return author, title, year, price
+#
+# book1 = ("Даррен Харди", "Накопительный эффект", 2022, 500 )
+# book2 = ["Даррен Харди", "Накопительный эффект", 2022]
+# book3 = {"author" : "Даррен Харди", "title" : "Накопительный эффект", "year" : 2022, "price" : 500 }
+# book4 = {"author" : "Даррен Харди", "title" : "Накопительный эффект", "year" : 2022 }
+#
+# print(book_to_tuple(book1))
+# print(book_to_tuple(book2))
+# print(book_to_tuple(book3))
+# print(book_to_tuple(book4))
+# # ('Даррен Харди', 'Накопительный эффект', 2022, 500)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, None)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, 500)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, None)
+
+# # чтобы не дублировать код, если необходимо добавить дополнительную проверку (например диапазон года)
+# def book_to_tuple(data: dict | tuple | list, min_year=2000, max_year=2025) -> tuple | None:
+#     price = None
+#
+#     match data:
+#         case author, title, year, price, *_:
+#             pass
+#         case author, title, year:
+#             pass
+#         case {"author" : author, "title" : title,"year" : year, "price" : price}:
+#             pass
+#         case {"author" : author, "title" : title,"year" : year}:
+#             pass
+#         case _:
+#             return None
+#     if not (min_year <= year <= max_year):  # вместо того, чтобы прописывать в каждом case
+#         return None
+#
+#     return author, title, year, price
+#
+# book1 = ("Даррен Харди", "Накопительный эффект", 2022, 500 )
+# book2 = ["Даррен Харди", "Накопительный эффект", 2022]
+# book3 = {"author" : "Даррен Харди", "title" : "Накопительный эффект", "year" : 2022, "price" : 500 }
+# book4 = {"author" : "Даррен Харди", "title" : "Накопительный эффект", "year" : 2022 }
+#
+# print(book_to_tuple(book1))
+# print(book_to_tuple(book2))
+# print(book_to_tuple(book3))
+# print(book_to_tuple(book4))
+# # ('Даррен Харди', 'Накопительный эффект', 2022, 500)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, None)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, 500)
+# # ('Даррен Харди', 'Накопительный эффект', 2022, None)
+
+# # но если в case мы хотим использовать указанную ранее переменную, то она будет принимать все значения, как case _:
+# a5 = 5
+# a3 = 3
+#
+# a = 5
+# match a:
+#     case a3:
+#         print(3)
+#     case a5:  # появляется предупреждение
+#         print(5)
+# # SyntaxError: name capture 'a3' makes remaining patterns unreachable
+
+# # 1 способ, используя проверку
+# a5 = 5
+# a3 = 3
+#
+# a = 5
+# match a:
+#     case int(a) as x if x == a3: # но получается довольно громоздко
+#         print(3)
+#     case int(a) as x if x == a5:
+#         print(5) # 5
+
+# # 2 способ, используя импорт из другого модуля
+# import const
+#
+# a = 5
+# match a:
+#     case const.a3:
+#         print(3)
+#     case const.a5:
+#         print(5)  # 5
+
+# # 3 способ, используя класс
+# class Consts:
+#     a3 = 3
+#     a5 = 5
+#
+# a = 5
+# match a:
+#     case Consts.a3: # через точку обращаясь к аттрибутам класса
+#         print(3)
+#     case Consts.a5:
+#         print(5)  # 5
