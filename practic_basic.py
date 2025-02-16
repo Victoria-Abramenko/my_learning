@@ -1,75 +1,73 @@
 ##__________________________________ Основы python______________________________________
+# #
+# print('hello', 'World!', sep=', ')  # hello, World!
 #
-# print('hello', 'World!', sep=', ')
-# from sys import set_asyncgen_hooks
-import random
-from collections.abc import Callable
-
 # print('first stroke', end=' - ')
-# print('second stroke')
-
-# name = input('enter your name: ')
+# print('second stroke')  # first stroke - second stroke
+#
+# name = input('enter your name: ')  # Вика
 # print('hello ', end=' ')
-# print(name)
-
+# print(name)  # hello  Вика
+#
 # name = 'Vika'
 # age = 33
-# print(name, age)
+# print(name, age)  # Vika 33
 #
 # name, age = 'Vika', 33
-# print(name, age)
+# print(name, age) # Vika 33
 
 # name_girl = 'Vika'
 # name_man = 'Victor'
 # name_girl, name_man = name_man, name_girl
-# print(name_girl, name_man)
+# print(name_girl, name_man) # Victor Vika
 
 # variable = 1
-# print(type(variable))
+# print(type(variable))  # <class 'int'>
 
 # x = 10
 # y = 5.5
 # my_sum = x + y
-# print(my_sum)
+# print(my_sum)  # 15.5
+
 #
 # x = 9
 # y = 4
-# print(x // y)
-# print(x % y)
+# print(x // y) # 2 # целочисленное деление(отбрасывается дробнная часть)
+# print(x % y)  # 1 # остаток от деления
 
 # my_float = 1.99999
-# my_int = int(my_float)
-# print(my_int)
-
+# my_int = int(my_float)  # преобразование в целое число
+# print(my_int)  # 1
+#
 # my_float = 1.99999
-# my_int = round(my_float)
-# print(my_int)
+# my_int = round(my_float)  # округление
+# print(my_int) # 2
 
 # apartment = 81
 # entrance = (apartment - 1) // 20 + 1
 # floor = (apartment - 1) % 20 // 4 + 1
-# print(f'У квартиры {apartment} - подъезд {entrance}, этаж {floor}')
-
+# print(f'У квартиры {apartment} - подъезд {entrance}, этаж {floor}') # У квартиры 81 - подъезд 5, этаж 1
+#
 # x = 10
 # if x > 0:
-#     print('x +')
+#     print('x +') # x + , так как x = 10
 # elif x == 0:
 #     print('x o')
 # else:
 #     print('x -')
 
-# a = b = c = 90
+# a = b = c = 90 # множественное присваивание
 # d = 'hello'
-# print(type(a), type(c), type(d))
+# print(type(a), type(c), type(d)) # <class 'int'> <class 'int'> <class 'str'>
 
 # a = -5 % 3
-# print(a)
+# print(a) # 1
 
 # a = 27 ** (1 / 3)
-# print(a)
+# print(a) # 3.0
 
-#функция round(number) округляет к целому числу, Но !!! 5 погранисное округление.
-#Округляет в некоторых случаях в большую сторону, иногда в меньшую.
+# функция round(number) округляет к целому числу, Но !!! 5 пограничное округление.
+# Округляет в некоторых случаях в большую сторону, иногда в меньшую.
 
 # a = round(0.5)
 # print(a) #0
@@ -81,7 +79,7 @@ from collections.abc import Callable
 # print(a) #11
 
 # _________________     модуль math ______________________________
-# import math # импортируется весь модуль, а значит необходимо указывать модуль, а зетем вызов функции.
+# import math # импортируется весь модуль, а значит необходимо указывать модуль, а затем вызов функции.
 # #ceil(number) округляет к наибольшему целому числу
 # a = math.ceil(5.2)
 # print(a) #6
@@ -92,22 +90,21 @@ from collections.abc import Callable
 # print(a) #5
 # a = math.floor(-5.2)
 # print(a) #-6
-# Чтобы не указывать модуль при вызове функций, необходимо просто импортировать функции ceil, floor из модуля math
 
+# Чтобы не указывать модуль при вызове функций, необходимо просто импортировать функции ceil, floor из модуля math
 # from math import ceil, floor
 # a = ceil(5.2)
 # b = floor(5.2)
 # print(a, b) #6 #5
 
 # import math
-
-# a = math.factorial(6) # вычисляет вакториал числа (1 * 2 * 3 * 4 * 5 * 6 = 720)
+# a = math.factorial(6) # вычисляет факториал числа (1 * 2 * 3 * 4 * 5 * 6 = 720)
 # print(a) #720
 #
-# a = math.trunc(5.9) #убирает дробную часть аналог int(5.9) = 5
+# a = math.trunc(5.9) # просто отбрасывает дробную часть аналог int(5.9) = 5
 # print(a) #5
 
-# a = math.log2(4) #логарифм основания 2, числа 4
+# a = math.log2(4) # логарифм основания 2, числа 4
 # print(a)#2.0
 #
 # a = math.log10(1000)
@@ -115,7 +112,6 @@ from collections.abc import Callable
 #
 # a = math.log(27, 3) # другая запись логарифм основания 3, числа 27.
 # # Если не указывать основание, натуральный логарифм
-#
 # print(a)#3.0
 
 # a = math.sqrt(49) #Вычисление квадратного корня
@@ -138,37 +134,38 @@ from collections.abc import Callable
 # a = 1.5
 # b = -12.5
 # c = 6
-# print(a, b, c,sep = " | ") #указание разделителя между аргументами результат 1.5 | -12.5 | 6, по умолчанию " "
+# print(a, b, c,sep = " | ")  # указание разделителя между аргументами результат 1.5 | -12.5 | 6, по умолчанию " "
 #
 # a = 1.5
 # b = -12.5
 # c = 6
-# print(a, end=" | ")#указание вывода в конце строки, по умолчанию "\n"
+# print(a, end=" | ")  # указание вывода в конце строки, по умолчанию "\n"
 # print(b, end=" | ")
-# print(c) #результат 1.5 | -12.5 | 6
+# print(c)   # результат 1.5 | -12.5 | 6
 
-#f-строка
+# # ___f-строка____
 # x = 5.6
 # y = -4.3
-# print("Координаты точки, x = ", x, ", y = ", y, sep="") #Обычный вывод, передача аргументов без разделителя
-# print(f"Координаты точки, x = {x}, y = {y}") #Форматированная строка
+# print("Координаты точки, x = ", x, ", y = ", y, sep="") # Обычный вывод, передача аргументов без разделителя
+# print(f"Координаты точки, x = {x}, y = {y}") # Форматированная строка
 # #Координаты точки, x = 5.6, y = -4.3
 # #Координаты точки, x = 5.6, y = -4.3
 #
-# my_input = input()
-# print(my_input, type(my_input)) #Зависит от, того что введет пользователь , например hjhg <class 'str'>
+# my_input = input() # hjhg
+# print(my_input, type(my_input)) # hjhg <class 'str'>
 # input выводит строку, поэтому даже, если пользователь введет число, на выходе будет тип строка 1234 <class 'str'>
 
-# number = float(input()) #Если пользователь передаст в input дробное число, то при использовании int, будет ошибка
-# print(abs(number)) #так как int преобразует только числа, в в дробных числах, помимо цифр есть точка.
-# # Например, если пользователь введет -5,4, результат будет 5,4, а в случае number = int(input())возникнет ошибка
+# number = float(input()) # -5.4 Если пользователь передаст в input дробное число, то при использовании int, будет ошибка
+# print(abs(number)) # 5.4 (модуль числа) так как int преобразует только числа, в дробных числах, помимо цифр есть точка.
+# Например, если пользователь введет -5.4, результат будет 5.4, а в случае number = int(input())возникнет ошибка
 #
 #
 # a = float(input("Введи длину прямоугольника: "))
 # b = float(input("Введи ширину прямоугольника: "))
 # print("Периметр прямоугольника:  ", 2 * (a + b))
 #
-# #Можно передавать параметры в одну строку, если использовать функцию map
+# # Можно передавать параметры в одну строку, если использовать функцию map
+# # map возвращает итератор(итерируемый объект), а запись a, b = 1 значение, 2 значение
 # a, b = map(float, input("Введи длину и ширину через пробел: ").split(" "))
 # print("Периметр прямоугольника: ", 2 * (a + b))
 
@@ -178,43 +175,44 @@ from collections.abc import Callable
 # print(a % 2 == 0) #True
 # print(b % 2 != 0) #True
 
-# #входит ли в диспазон от 1 до 5
+# # входит ли в диапазон от 1 до 5
 # x = 3
-# print(x >= 1 and x <= 5)#True
-# print(1 <= x <= 5)# сокращенная запись True
+# print(x >= 1 and x <= 5) # True
+# print(1 <= x <= 5)  # сокращенная запись True
 
 # x = 7
-# print(x % 2 == 0 or x % 3 == 0)#False
+# print(x % 2 == 0 or x % 3 == 0)  # False
 # проверка на неравенство
-# print(x % 2 != 0 and x % 3 != 0)#True
-# print(not(x % 2 == 0 or x % 3 == 0))#True у оператора not самый высокий приоритет, чтобы он не выполнился
+# print(x % 2 != 0 and x % 3 != 0)  # True
+# print(not(x % 2 == 0 or x % 3 == 0))  # True у оператора not самый высокий приоритет, чтобы он не выполнился
 # в первую очередь, необходимо условие поместить в скобки
 
-# print(bool(0))#False
-# print(bool(-10))#True
-# print(bool(5))#True
-# print(bool(""))#False
-# print(bool(" "))#True Есть хотя бы один символ, в том числе пробел
-# print(bool("0"))#True
-# print(bool("gggh"))#True
+# Есть хотя бы один символ, в том числе пробел будет True, а если символов нет или значение 0, то False
+# print(bool(0))  # False
+# print(bool(-10))  # True
+# print(bool(5))  # True
+# print(bool(""))  # False
+# print(bool(" "))  # True
+# print(bool("0"))  # True
+# print(bool("gggh"))  # True
 
 # a = "Hi hi hi"
-# print(a[len(a) - 1]) #i вывод символа по индексу. Обращение к последнему символу строки
+# print(a[len(a) - 1])  # i вывод символа по индексу. Обращение к последнему символу строки
 # print(a[-1]) # более упрощенная запись обращения к последнему символу строки
 
-# print("stroke"[3]) #o  по индексу можно обращаться непосредственно в строке
+# print("stroke"[3]) # o  по индексу можно обращаться непосредственно в строке
 
-# Срезы строк stoke[start:stop] последний индекс не включен
+# Срезы строк stroke[start:stop] последний индекс не включен
 # stroke = "python_lessons"
-# print(stroke[1:3])# yt с 1 и до 3, не включая 3!
-# print(stroke[4:])# on с 4 и до конца
-# print(stroke[:4])# pyth с начала и до 4, не включая 4!
-# str_1 = stroke[:]
-# print(str_1,id(stroke), id(str_1))#python_lessons 2622090832048 2622090832048 ссылаются на один и тот же объект,
+# print(stroke[1:3])  # yt с 1 и до 3, не включая 3!
+# print(stroke[4:])  # on с 4 и до конца
+# print(stroke[:4])  # pyth с начала и до 4, не включая 4!
+# str_1 = stroke[:]  # полный срез, но она не дублируется
+# print(str_1,id(stroke), id(str_1)) #  python_lessons 2622090832048 2622090832048 ссылаются на один и тот же объект,
 # # эта строка не дублируется
 # print(stroke[2:-2])# th -2 предпоследний символ, но он не включается в срез
-# print(stroke[4:2])# ничего не выведет, так как интервал не задан
-# #stroke[start:stop:step]шаг перебора символов, по умолчанию = 1
+# print(stroke[4:2])# ничего не выведет, так как интервал задан не верно
+# # stroke[start:stop:step]шаг перебора символов, по умолчанию = 1
 # print(stroke[1:4:2])# yh
 # print(stroke[2::3])# tn с 2 до конца с шагом 3
 # print(stroke[::2])# pto с начала до конца с шагом 2
@@ -228,43 +226,43 @@ from collections.abc import Callable
 
 # Методы строк объект.метод(аргументы)
 # my_str = "I love Python"
-# print(my_str.upper()) # I LOVE PYTHON, но это новая строка, содержащая все заглавные буквы
-# print(my_str.lower()) # i love python_lessons
-# print(my_str.count("o")) #2 возвращает количество вхождений подстроки в строку,
-# print(my_str.count("o",4))# 1 - есть необязательный параметры  start и end начало и конец индекса поиска
-# print(my_str.count("o",4, 11))# 0 - параметр не включается в поиск
-# print(my_str.find("t"))#9 возвращает индекс первого найденного вхождения подстроки, также есть необязательный параметры
+# print(my_str.upper())  # I LOVE PYTHON, но это новая строка, содержащая все заглавные буквы
+# print(my_str.lower())  # i love python_lessons это новая строка, содержащая все прописные буквы
+# print(my_str.count("o"))  # 2 возвращает количество вхождений подстроки ("о")в строку,
+# print(my_str.count("o",4))  # 1 - есть необязательный параметры  start и end начало и конец индекса поиска
+# print(my_str.count("o",4, 11))  # 0 - параметр не включается в поиск
+# print(my_str.find("t"))  # 9 возвращает индекс первого найденного вхождения подстроки, также есть необязательный параметры
 # #  start и end начало и конец индекса поиска
-# print(my_str.find("tyyyy"))#-1 значит такого вхождения нет
-# print(my_str.rfind("ht"))# -1 поиск наоборот справа налево, но сочетание также слева направо?
-# print(my_str.rfind("th"))# 9 но сочетанием также слева направо? Просто первым вхождением будет индекс с конца
-# print(my_str.index("th"))# 9 Тот же принцип, что и метод find, ищет вхождение, но!
-# # print(my_str.index("tyyyy"))# ValueError: substring not found если такого вхождения нет, то выведет ошибку
-# print(my_str.replace("love", "like"))#I like Python Заменяет старую подстроку, на новую
-# print(my_str.replace("hon",""))#I love Pyt Можно удалить подстроку, если указать пустую подстроку
-# print(my_str.replace("o","f", 1))#I lfve Python #необязательный параметр count, определяет
+# print(my_str.find("tyyyy"))  # -1 значит такого вхождения нет
+# print(my_str.rfind("ht"))  # -1 поиск наоборот справа налево, но сочетание также слева направо?
+# print(my_str.rfind("th"))  # 9 но сочетанием также слева направо? Просто первым вхождением будет индекс с конца
+# print(my_str.index("th"))  # 9 Тот же принцип, что и метод find, ищет вхождение, но!
+# # print(my_str.index("tyyyy"))  # ValueError: substring not found если такого вхождения нет, то выведет ошибку, вместо -1
+# print(my_str.replace("love", "like"))  # I like Python Заменяет старую подстроку, на новую
+# print(my_str.replace("hon",""))  # I love Pyt Можно удалить подстроку, если указать пустую подстроку
+# print(my_str.replace("o","f", 1))  # I lfve Python # необязательный параметр count, определяет
 # # максимальное число замен
-# print(my_str.isalpha())# False, так как есть пробел, он не буква, а если строка содержит только буквы True
-# print("IlovePython".isalpha())# True
-# print("12345".isdigit())#True если строка содержит только цифры, и False если другой символ
-# print("123.45".isdigit())# False
-# print("abc".rjust(6))#   abc Выводит строку, необходимой ширины, заполняя ее символом в начале, по умолчанию пробел
-# print("abc".rjust(6, "*"))#***abc
-# print("abc".ljust(6, "*"))#abc***  заполняя ее символом в конце
-# # print("abc".ljust(6, "**"))#ошибка TypeError: The fill character must be exactly one character long
+# print(my_str.isalpha())  # False, так как есть пробел, он не буква, а если строка содержит только буквы True
+# print("IlovePython".isalpha())  # True
+# print("12345".isdigit())  #True если строка содержит только цифры, и False если другой символ
+# print("123.45".isdigit())  # False
+# print("abc".rjust(6))  #   abc Выводит строку, необходимой ширины, заполняя ее символом в начале, по умолчанию пробел
+# print("abc".rjust(6, "*"))  # ***abc
+# print("abc".ljust(6, "*"))  # abc***  заполняя ее символом в конце
+# # print("abc".ljust(6, "**"))  # ошибка TypeError: The fill character must be exactly one character long
 # # в параметре можно указать только 1 символ
-# print(my_str.rjust(6))# I love Python, если желаемая длина меньше исхлдной строки, то на выходе будет исходная строка
-# print(my_str.split(" "))# ['I', 'love', 'Python'] разбивает строку по казанному разделителю на строки и передает их
+# print(my_str.rjust(6))  # I love Python, если желаемая длина меньше исходной строки, то на выходе будет исходная строка
+# print(my_str.split(" "))  # ['I', 'love', 'Python'] разбивает строку по казанному разделителю на строки и передает их
 # # в виде списка
 # print("1, 2 ,   3, 4,  5".replace(" ", "").split(","))# ['1', '2', '3', '4', '5'] На полученную новую строку
-# # методом,можно применить другой метод. Слева направою Сначала заменяются пробелы, а затем строка делится по разделителю
+# # методом ,можно применить другой метод. Слева направо. Сначала заменяются пробелы, а затем строка делится по разделителю
 # # в список с отдельными строками
-# print(",".join(["1", "2", "3"]))#"1,2,3" Из списка строк, выводит 1 строку в качестве символа между строками  ","
-# print("***".join(["1", "2", "3"]))#1***2***3 здесь можно указывать несколько символов
+# print(",".join(["1", "2", "3"]))  # "1,2,3" Из списка строк, выводит 1 строку в качестве символа между строками  ","
+# print("***".join(["1", "2", "3"]))  # 1***2***3 здесь можно указывать несколько символов
 # Также можно применить несколько методов для получения строки из строки, главное понимать, что метод возвращает и какой
-#аргумент необходимо передать методу.
-# print(", ".join("гений миллиардер филонтроп".split()))#гений, миллиардер, филонтроп join из списка в одну строку,
-#вставляя между строками символ ", ", а split разбивает строку в список строк по " ". " " по умолчанию
+# аргумент необходимо передать методу.
+# print(", ".join("гений миллиардер филантроп".split()))# гений, миллиардер, филантроп join из списка в одну строку,
+# вставляя между строками символ ", ", а split разбивает строку в список строк по " ". " " по умолчанию
 # print("   gh j   \n".strip())# "gh j" удаляет все символы пробела и переноса строки в начале и вконце строки
 # print("   gh j   \n".rstrip())# "   gh j" удаляет все символы пробела и переноса вконце строки, справа
 # print("   gh j   \n".lstrip())# "gh j   \n" удаляет все символы пробела и переноса в начале, слева
@@ -272,16 +270,17 @@ from collections.abc import Callable
 
 
 #______________________спецсимволы________________
-#символ \n относится к спецсимволам и программой распознается как 1 символ
-# print(len("\n"))#1 #символ переноса строки
-# # print("\needs\")# SyntaxError: unterminated string literal (detected at line 274); perhaps you escaped the end quote?
-# print("\needs")#eeds с переносом на новую строку
-# print("\\")#\ #символ обратного слэша экранирование
-# print("\"")#" #символ апострофа(кавычек)
-# # print("car "bmw"")#ошибка
-# print("car \"bmw\"")#car "bmw"
-# print('car "bmw"')#car "bmw" можно и так сделать, но хорошей практикой является именно использование экранирования \
-# print("\ttext")#	text #символ табуляции
+# символ \n относится к спецсимволам и программой распознается как 1 символ
+# print(len("\n"))  # 1 # символ переноса строки
+# # print("\needs\")  # SyntaxError: unterminated string literal (detected at line 274); perhaps you escaped the end quote?
+# print("\needs")
+# eeds с переносом на новую строку
+# print("\\")  #\ # символ обратного слэша экранирование
+# print("\"")  #" # символ апострофа(кавычек)
+# # print("car "bmw"")  # ошибка
+# print("car \"bmw\"")  # car "bmw"
+# print('car "bmw"') # car "bmw" можно и так сделать, но хорошей практикой является именно использование экранирования \
+# print("\ttext")#	text # символ табуляции
 # #Следует помнить об этих спецсимволах при указании пути файла
 # path = "E:\my_project\new_victoria"#E:\my_project
 # #ew_victoria сработал перенос символа строки
@@ -291,7 +290,7 @@ from collections.abc import Callable
 # path = "E:\\my_project\\new_victoria"#E:\my_project\new_victoria
 # print(path)
 # #SyntaxWarning: invalid escape sequence '\m' в современной версии языка интерпритатор ругается при таком синтаксе
-#rстрока - или сырая строка, она передает все символы, игнорируя спецсимволы
+# rстрока - или сырая строка, она передает все символы, игнорируя спецсимволы
 # path = "E:\\my_project\\new_victoria"
 # print(path)#E:\my_project\new_victoria
 # path = r"E:\\my_project\\new_victoria"# сырая строка
