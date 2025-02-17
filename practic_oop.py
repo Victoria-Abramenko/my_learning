@@ -25,3 +25,142 @@
 # ___________  Полиморфизм  ______________
 # Возможность работать единым способом с разными типами данных. Методы из базового класса дополнять в дочерних классах
 
+# # ___________________   Классы и объекты классов ____________________
+# # class Имя_класса:
+# class Point:  # определяем класс, Имя класса принято начинать с заглавной буквы
+#     color = "red"  # содержимое класса, например, цвет и радиус точки
+#     circle = 2
+# # переменные внутри класса чаще называют атрибутами класса или его свойствами
+# # класс создает свое пространство имен
+
+# # Чтобы обратиться к его свойствам также используется оператор.
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# print(Point.color)  # red
+#
+# print(Point.__dict__)  # позволяет увидеть все переменные класса
+# # {'__module__': '__main__', '__firstlineno__': 37, 'color': 'red', 'circle': 2, '__static_attributes__': (),
+# # '__dict__': <attribute '__dict__' of 'Point' objects>, '__weakref__': <attribute '__weakref__' of 'Point' objects>,
+# # '__doc__': None}
+
+# # Чтобы создать экземпляр (объект) класса Имя_класс()
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# obj1 = Point()  # создает разные объекты
+# obj2 = Point()
+# print(id(obj1))  # 2306550819072
+# print(id(obj2))  # 2306553498192
+#
+# print(type(obj1))  # <class '__main__.Point'> тип от класса Point
+# #
+# # # в самих obj1 и obj2 нет свойств, но они ссылаются на свойства класса Point
+# print(obj1.__dict__)  # {}
+# print(obj1.color)  # red
+
+# # объекты obj1 также создают свое пространство имен, и обращаясь к их свойствам, мы изменяем их только в этом
+# # пространстве, в Point изменений не будет
+
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# obj1 = Point()
+# obj1.color = "black"
+# print(Point.color)  # red
+# print(obj1.color)  # black
+# print(obj1.__dict__)  # {'color': 'black'} у этого объекта после присваивания появится свой атрибут
+
+# # Во внешний класс также можно добавлять новые свойства Имя_класса.название_атрибута = значение
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# Point.border = ["white", 0.5 ]
+# print(Point.__dict__)
+# # {'__module__': '__main__', '__firstlineno__': 78, 'color': 'red', 'circle': 2, '__static_attributes__': (),
+# # '__dict__': <attribute '__dict__' of 'Point' objects>, '__weakref__': <attribute '__weakref__' of 'Point' objects>,
+# # '__doc__': None, 'border': ['white', 0.5]}
+
+# # или при помощи специального метода setattr(класс, "свойство", значение)
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# obj1 = Point()
+#
+# setattr(obj1, "line_width", 5)
+# print(obj1.__dict__)  # {'line_width': 5}
+# Если в классе не существует атрибута, которому мы пытаемся присвоить значения, то динамически создается новый
+
+# # getattr(Имя_класса, "атрибут", что вывести, если такого не существует - необязательный параметр) позволяет читать
+# # атрибуты из указанного пространства имен, если такого атрибута не  существует, можно задать, что вывести в
+# # таком случае
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# # getattr(Point, "border")  # AttributeError: type object 'Point' has no attribute 'border'
+# a = getattr(Point, "border", False)  # Выведет False, если такого атрибута нет. Чтобы не было ошибки
+# b = getattr(Point, "color", False)  # А если такой атрибут есть, то выведет его значение
+# print(a)  # False
+# print(b)  # red
+
+# # удаление атрибутов
+# # 1 способ - del имя_класса.атрибут
+# class Point:
+#     color = "red"
+#     circle = 2
+#     border = {'line_width': 5}
+#
+# del Point.border
+# a = getattr(Point, "border", False)
+# print(a)  # False атрибут удален
+# # повторное удаление атрибута приведет к ошибке, так как нельзя удалять не существующий,
+# # проверить наличие атрибута можно при помощи функции hasattr(класс, "атрибут")
+# print(hasattr(Point, "border"))  # False
+
+# # 2 способ, при помощи функции delattr(класс, атрибут)
+# class Point:
+#     color = "red"
+#     circle = 2
+#     border = {'line_width': 5}
+#
+# delattr(Point, "border")
+# print(hasattr(Point, "border"))  # False
+
+# # функция hasattr() указывает то, что через указанное пространство имен, можно получить доступ к атрибуту, но это
+# # не значит, что он находится непосредственно в нем, например
+#
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# obj1 = Point()
+# print(hasattr(obj1, "color"))  #  # на выходе True хотя в самом объекте свойство color не прописано
+#
+# # а вот удаление происходит именно в текущем пространстве имен
+# del obj1.color  # AttributeError: 'Point' object has no attribute 'color' вызовет ошибку
+
+# # Если удалить свойство из объекта класса, то оно унаследуется от родительского класса
+# class Point:
+#     color = "red"
+#     circle = 2
+#
+# obj1 = Point()
+# obj1.color = "black"
+# print(obj1.color)  # black
+# del obj1.color
+# print(obj1.color)  # red
+
+# class Point:
+#     "класс точек на координатной плоскости" # можно добавлять описание класса
+#     color = "red"
+#     circle = 2
+#
+# print(Point.__doc__)  # метод для вызова описания
+
+
