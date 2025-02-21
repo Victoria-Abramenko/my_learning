@@ -457,3 +457,113 @@
 # # создать второй экземпляр
 # db2.connect()  # Соединение с БД: user=root2, password=1234567, port=80
 # # так как срабатывает init и локальные значения изменяются
+
+# # _____________________________ декораторы @classmethod @staticmethod __________________
+# class Vector:
+#     min_coords = 0  # атрибуты класса
+#     max_coords = 100
+#
+#     @classmethod # декоратор для метода класса
+#     def validate(cls, param): # интегрированная среда подставила cls(ссылка на текущий класс)
+#         return cls.min_coords < param < cls.max_coords # вернет True или False. Обращается к атрибутам класса, но
+#         # не может обращаться к локальным атрибутам экземпляров класса, так как в функции нет ссылки на него (self)
+#
+#
+#     def __init__(self, x, y): # методы для экземпляров класса
+#         self.x = x
+#         self.y = y
+#
+#     def get_coords(self):
+#         return self.x, self.y
+#
+# # чтобы вызвать метод можно обратиться к нему через класс
+# print(Vector.validate(15)) # True (0 < 15 < 100) # cls передается автоматически
+# # а если хотим вызвать метод экземпляра класса, через класс, то ссылку на него необходимо передать
+# v = Vector(3, 4)
+# print(Vector.get_coords(v))  # (3, 4)
+
+# # делаем проверку x и y, вызвав validate в init
+# class Vector:
+#     min_coords = 0  # атрибуты класса
+#     max_coords = 100
+#
+#     @classmethod
+#     def validate(cls, param):
+#         return cls.min_coords < param < cls.max_coords
+#
+#
+#     def __init__(self, x, y):
+#         self.x = self.y = 0 # начальные значения
+#         # if Vector.validate(x) and Vector.validate(y):  # входят ли x и y в указанный диапазон, если да, то присвоить
+#         #     # эти значения
+#         #     self.x = x
+#         #     self.y = y
+#         if self.validate(x) and self.validate(y):  # ссылка на экземпляр класса, также вызовет метод класса, в cls
+#             # self передаст ссылку на класс, это более универсальный способ, так как можно переименовать класс,
+#             # а код внутри не менять. Поэтому прописывать название класса внутри класса считается плохой практикой
+#             self.x = x
+#             self.y = y
+#
+#     def get_coords(self):
+#         return self.x, self.y
+#
+# v1 = Vector(5, 7)
+# v2 = Vector(1, 101)
+# print(v1.get_coords()) # (5, 7)
+# print(v2.get_coords()) # (0, 0)  # так как условие не выполнилось, новые значения не присвоились, а остались те, что
+# # по умолчанию
+
+# статические методы не имеют доступа ни к атрибутам ни к атрибутам его экземпляров - самостоятельная независимая
+# # функция внутри класса декоратор @staticmethod
+# class Vector:
+#     min_coords = 0  # атрибуты класса
+#     max_coords = 100
+#
+#     @classmethod
+#     def validate(cls, param):
+#         return cls.min_coords < param < cls.max_coords
+#
+#
+#     def __init__(self, x, y):
+#         self.x = self.y = 0
+#         if self.validate(x) and self.validate(y):
+#             self.x = x
+#             self.y = y
+#
+#     def get_coords(self):
+#         return self.x, self.y
+#
+#     @staticmethod
+#     def norm2(x, y): # вычисление квадратичной нормы вектора # в функции нет никаких скрытых параметров(self, cls)
+#         return x * x + y * y
+#
+# print(Vector.norm2(10, 6))  # 136
+
+# # статическую функцию можно использовать и внутри класса
+# class Vector:
+#     min_coords = 0  # атрибуты класса
+#     max_coords = 100
+#
+#     @classmethod
+#     def validate(cls, param):
+#         return cls.min_coords < param < cls.max_coords
+#
+#
+#     def __init__(self, x, y):
+#         self.x = self.y = 0
+#         if self.validate(x) and self.validate(y):
+#             self.x = x
+#             self.y = y
+#
+#         print(self.norm2(self.x, self.y))
+#
+#     def get_coords(self):
+#         return self.x, self.y
+#
+#     @staticmethod
+#     def norm2(x, y):
+#         return x * x + y * y
+#
+#
+# v = Vector(1, 4) # 17
+
