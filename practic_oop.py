@@ -567,3 +567,166 @@
 #
 # v = Vector(1, 4) # 17
 
+# #___________________  режимы доступа public, private, protected (инкапсуляция)  _____________________
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self.x = x
+#         self.y = y
+#
+#
+# pt = Point(4, 8)
+# print(pt.x, pt.y) # 4 8 # эти свойства доступны извне, через ссылку pt
+# # даже можно изменить эти свойства
+# pt.x = 20
+# pt.y = "Stroke"
+# print(pt.x, pt.y)  # 20 Stroke
+
+# чтобы указать доступ к атрибутам класса
+# public(публичное свойство) - имя_атрибута без символа одного и двух подчеркиваний вначале атрибута
+# protected(обращение внутри его класса и во всех его дочерних классов) - _имя_атрибута с одним символом
+# подчеркивания в начале атрибута
+# # private(обращение только внутри класса) - __имя_атрибута с двумя символами подчеркивания в начале атрибута
+
+# в режиме protected обращение извне только предупреждает, что подразумевается, что эти атрибуты не должны
+# использоваться извне
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self._x = x
+#         self._y = y
+#
+#
+# pt = Point(4, 8)
+# print(pt._x, pt._y) # 4 8 # По-прежнему можно получить их свойства, но интегрированная среда разработки уже подчеркивает,
+# предупреждает, что не стоит использовать извне эти атрибуты, но не ограничивает
+
+# # в режиме private обращение извне приведет к ошибке, но при работе внутри класса проблем не возникнет
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self.__x = x
+#         self.__y = y
+#
+    # def set_coords(self, x, y): # такой метод называется сеттером (получает данные)
+    #     if type(x) in (int, float) and type(y) in (int, float): # можно сделать проверку корректности данных
+    #         self.__x = x
+    #         self.__y = y
+
+#     def get_coords(self):  # такой метод называется геттером
+#         return (self.__x, self.__y)
+#
+# pt = Point(4, 8)
+# # print(pt.__x, pt.__y) # AttributeError: 'Point' object has no attribute '__x'
+#
+# pt.set_coords(10, 11)
+# print(pt.get_coords())  # (10, 11) программа отработала без ошибок, внутри класса можно обращаться к этим атрибутам
+
+# интерфейсный метод (сеттер и геттер). Чтобы случайно не нарушить работу класса, с атрибутами стоит взаимодействовать
+# через публичные методы(сеттер(установить) и геттер(получить)) - в этом суть инкапсуляции
+
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self.__x = x
+#         self.__y = y
+#
+#     def set_coords(self, x, y):
+#         if type(x) in (int, float) and type(y) in (int, float):
+#             self.__x = x
+#             self.__y = y
+#         else:
+#             raise ValueError("координаты должны быть числами") # выведет сообщение ошибки, в случае не соответствия условию
+#
+#     def get_coords(self):
+#         return (self.__x, self.__y)
+#
+# pt = Point(4, 8)
+# pt.set_coords("10", 11)
+# print(pt.get_coords())  # ValueError: координаты должны быть числами, в случае передачи неверных данных,
+# # выведется указанное сообщение ошибки
+
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self.x = self.y = 0 # начальные значения, которые останутся, если переданные аргументы не пройдут проверку
+#         # при создании экземпляра класса
+#         if self.__check_value(x) and self.__check_value(y): # если пройдут проверку, то атрибуты примут переданное значение
+#             self.__x = x
+#             self.__y = y
+#
+#     @classmethod
+#     def __check_value(cls, a): # private можно делать и методы класса
+#         return type(a) in (int, float) # тогда, чтобы скорректировать проверку, достаточно отредактировать одну строку
+#
+#     def set_coords(self, x, y):
+#         if self.__check_value(x) and self.__check_value(y): # если переданные в метод значения пройдут проверку, то
+#             # установятся новые значения
+#             self.__x = x
+#             self.__y = y
+#         else:
+#             raise ValueError("координаты должны быть числами") # если не пройдут, выведется ошибка с этим текстом
+#
+#     def get_coords(self):
+#         return (self.__x, self.__y)
+#
+# pt = Point(4, 8)
+# pt.set_coords(10, 11)
+# print(pt.get_coords())
+
+# на самом деле к этим элементам можно обратиться используя их кодовое имя (то, которое указано у экземпляра класса
+# в словаре)
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self.x = self.y = 0
+#         if self.__check_value(x) and self.__check_value(y):
+#             self.__x = x
+#             self.__y = y
+#
+#     @classmethod
+#     def __check_value(cls, a):
+#         return type(a) in (int, float)
+#
+#     def set_coords(self, x, y):
+#         if self.__check_value(x) and self.__check_value(y):
+#             self.__x = x
+#             self.__y = y
+#         else:
+#             raise ValueError("координаты должны быть числами")
+#
+#     def get_coords(self):
+#         return (self.__x, self.__y)
+#
+# pt = Point(4, 8)
+# pt.set_coords(10, 11)
+# print(pt.__dict__) # {'x': 0, 'y': 0, '_Point__x': 10, '_Point__y': 11} в словаре их имя _Point__x и _Point__y
+# print(pt._Point__x, pt._Point__y) # 10 11 по этому имени они доступны извне, хоть среда разработки и предупреждает,
+# # программа отработает - но так делать не рекомендуется
+
+# Чтобы строже защитить атрибуты можно использовать специальный модуль accessify, но его сначала необходимо установить
+# pip install accessify
+
+# # from accessify import private, protected # декораторы для методов
+# class Point:
+#     def __init__(self, x = 0, y = 0):
+#         self.x = self.y = 0
+#         if self.check_value(x) and self.check_value(y):
+#             self.__x = x
+#             self.__y = y
+#
+#     # @private
+#     @classmethod
+#     def check_value(cls, a):
+#         return type(a) in (int, float)
+#
+#     def set_coords(self, x, y):
+#         if self.check_value(x) and self.check_value(y):
+#             self.__x = x
+#             self.__y = y
+#         else:
+#             raise ValueError("координаты должны быть числами")
+#
+#     def get_coords(self):
+#         return (self.__x, self.__y)
+#
+# pt = Point(4, 8)
+# pt.set_coords(10, 11)
+# pt.check_value(5) # при декораторе @private выведет ошибку, что данный метод является приватным
+# # защита с этим модулем более надежная, но чаще используют два подчеркивания, так как этого достаточно
+
+
