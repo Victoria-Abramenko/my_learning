@@ -729,4 +729,314 @@
 # pt.check_value(5) # при декораторе @private выведет ошибку, что данный метод является приватным
 # # защита с этим модулем более надежная, но чаще используют два подчеркивания, так как этого достаточно
 
+# # ____________  магические методы __setattr __getattr  _________________________
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+# 
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+# 
+#     def set_coords(self, x, y):
+#         self.x = x
+#         self.y = y
+# 
+# pt1 = Point(1, 2)
+# pt3 = Point(3, 4)
+#
+# # если в пространстве имен не существует какого-то атрибута(явно не указан в экземпляре класса), то поиск переходит
+# # во внешнее пространство имен (атрибуты в самом классе)
+# # print(pt1.MAX_COORDS) # 100
+#
+# # чтобы обратиться к атрибутам класса внутри метода, также необходимо указать ссылку на класс(использовать лучше self,
+# # а не имя класса)
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS: # ссылка на класс через self
+#             self.x = x
+#             self.y = y
+#
+# # но чтобы изменить атрибут внутри класс, есть нюанс
+#     def set_bound(self, left):
+#         self.MIN_COORDS = left # здесь оператор присваивания создаст этот атрибут с новым значением в текущей локальной
+#         # области видимости(в экземпляре класса, а не изменит значение самого класса)
+#
+# pt1 = Point(1, 2)
+# pt1.set_bound(50)
+# print(pt1.__dict__) # {'x': 1, 'y': 2, 'MIN_COORDS': 50} атрибуты экземпляра класса pt1
+# print(Point.__dict__) # {'__module__': '__main__', '__firstlineno__': 754, 'MIN_COORDS': 0, 'MAX_COORDS': 100,
+# # '__init__': <function Point.__init__ at 0x0000015DBE0137E0>,
+# # 'set_coords': <function Point.set_coords at 0x0000015DBE013920>,
+# # 'set_bound': <function Point.set_bound at 0x0000015DBE0139C0>,
+# # '__static_attributes__': ('MIN_COORDS', 'x', 'y'), '__dict__': <attribute '__dict__' of 'Point' objects>,
+# # '__weakref__': <attribute '__weakref__' of 'Point' objects>, '__doc__': None}
+# # значение 'MIN_COORDS': 0 у класса Point осталось прежним
+#
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+# # но чтобы изменить атрибут внутри класса, нужно использовать декоратор (метод класса) и ссылку на сам класс cls
+#     @classmethod
+#     def set_bound(cls, left):
+#         cls.MIN_COORDS = left #
+#
+# pt1 = Point(1, 2)
+# pt1.set_bound(50)
+# print(pt1.__dict__) # {'x': 1, 'y': 2} не создается новый атрибут в экземпляре класса pt1
+# print(Point.__dict__)# ...'MIN_COORDS': 50,... а в самом классе изменилось значение этого атрибута, хотя вызывали этот
+# # метод через экземпляр класса
+
+# __setattr__(self, key, value) - автоматически вызывается при изменении свойств key класса
+# __getattribute__(self, item) - автоматически вызывается при получении свойства класса с именем item
+# __getattr__(self, item) - автоматически вызывается при получении несуществующего свойства item класса
+# __delattr__(self, item) - автоматически вызывается при удалении свойства item (независимо от того существует оно или нет)
+
+# метод __getattribute__(self, item)
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __getattribute__(self, item):
+#         print("автоматически вызвался __getattribute__ при считывании атрибута через экземпляр класса")
+#         return object.__getattribute__(self, item)  # чтобы этот метод отработал корректно необходимо обратиться
+#         # к общему object, от которого неявно наследуются все классы. Передаем ему те же параметры, поскольку метод
+#         # должен возвращать значение атрибута используем return
+#
+# pt = Point(1, 2)
+# a = pt.x # обращение к атрибуту через экземпляр класса, при запуске программы отработает метод __getattribute__
+# print(a)
+# # автоматически вызвался __getattribute__ при считывании атрибута через экземпляр класса
+# # 1 - возвращает значение атрибута
+# # None если закомментировать строчку return в __getattribute__, то значение будет None
+
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __getattribute__(self, item): # такой метод используется, например, если необходимо закрыть доступ к атрибуту
+#         if item == "x": # если обращение будет к x, выведется ошибка
+#             raise ValueError("Доступ к x ограничен")
+#         else:
+#             return object.__getattribute__(self, item) # если обращение будет не к x, то вернется его значение
+#
+# pt = Point(1, 2)
+# a = pt.x # ValueError: Доступ к x ограничен
+# print(a)
+
+# метод __setattr__(self, key, value)
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __setattr__(self, key, value): # автоматически вызывается, когда идет присвоение какому-либо атрибуту значения
+#         # key - имя атрибута, value - значение, которое присваивается
+#         print("автоматически вызвался __setattr__ при присвоении значений атрибуту через экземпляр класса")
+#
+# pt = Point(1, 2) # передаются 2 значения, поэтому при запуске программы, метод __setattr__ отработает дважды
+# # автоматически вызвался __setattr__ при присвоении значений атрибуту через экземпляр класса
+# # автоматически вызвался __setattr__ при присвоении значений атрибуту через экземпляр класса
+#
+# # этот метод можно использовать, чтобы запретить создавать новый атрибут
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __setattr__(self, key, value):
+#         if key == "z": # если мы попытаемся создать атрибут z выведет ошибку
+#             raise AttributeError("недопустимое имя атрибута")
+#         else: # при создании любого другого просто присвоит ему значение
+#             object.__setattr__(self, key, value)
+#
+# pt = Point(1, 2)
+# pt.z = 3 # AttributeError: недопустимое имя атрибута
+
+# # у этого атрибута есть еще нюанс, если присваивать в нем значение атрибуту через self, то он будет отрабатывать
+# # по рекурсии и упадет с ошибкой
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __setattr__(self, key, value):
+#         if key == "z": # если мы попытаемся создать атрибут z выведет ошибку
+#             raise AttributeError("недопустимое имя атрибута")
+#         else: # при создании любого другого просто присвоит ему значение
+#             self.x = value
+#
+# pt = Point(1, 2)
+# pt.i = 5
+# # RecursionError: maximum recursion depth exceeded
+
+# # чтобы исправить это, необходимо обратиться к коллекции атрибутов(__dict__) через ключ
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __setattr__(self, key, value):
+#         if key == "z": # если мы попытаемся создать атрибут z выведет ошибку
+#             raise AttributeError("недопустимое имя атрибута")
+#         else: # при создании любого другого просто присвоит ему значение
+#             self.__dict__[key] = value # но лучше это делать через object
+#
+# pt = Point(1, 2)
+# pt.i = 5
+# # тогда ошибки не возникнет
+
+# метод __getattr__
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __getattr__(self, item): # автоматически вызывается при обращении к несуществующему атрибуту экземпляра класса
+#         print("автоматически вызвался __getattr__ при обращении к несуществующему атрибуту")
+#
+# pt = Point(1, 5)
+# print(pt.yy)
+# автоматически вызвался __getattr__ при обращении к несуществующему атрибуту
+# None
+
+# # его используют, например, чтобы вернуть значение False, вместо возврата исключения(ошибки)
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __getattr__(self, item): # при запуске программы без этого метода, в случае обращения к несуществующему
+#         # атрибуту возникла бы ошибка
+#         return False
+#
+# pt = Point(1, 5)
+# print(pt.yy) # False и никакой ошибки
+
+# # метод __delattr__
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __delattr__(self, item): # автоматически вызывается при удалении атрибута
+#         print(f"автоматически вызвался __delattr__ так как удалили атрибут {item}")
+#
+# pt = Point(1, 5)
+# del pt.x # автоматически вызвался __delattr__ так как удалили атрибут x
+# # но сам атрибут удален не будет
+# print(pt.__dict__) # {'x': 1, 'y': 5}
+
+# # чтобы удалить этот атрибут, его снова нужно вызвать через object
+# class Point:
+#     MIN_COORDS = 0
+#     MAX_COORDS = 100
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def set_coords(self, x, y):
+#         if self.MIN_COORDS < x < self.MAX_COORDS and self.MIN_COORDS < y < self.MAX_COORDS:
+#             self.x = x
+#             self.y = y
+#
+#     def __delattr__(self, item): # автоматически вызывается при удалении атрибута экземпляра класса
+#         print(f"автоматически вызвался __delattr__ так как удалили атрибут {item}")
+#         object.__delattr__(self, item)
+#
+# pt = Point(1, 5)
+# del pt.x # автоматически вызвался __delattr__ так как удалили атрибут x
+# print(pt.__dict__) # {'y': 5} # теперь атрибут удален
 
