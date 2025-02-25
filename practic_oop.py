@@ -1072,3 +1072,130 @@
 # print(th2.__dict__)
 # # {'name': 'thread1', 'data': {}, 'id': 3, 'attr_new': 'new'}
 # # {'name': 'thread1', 'data': {}, 'id': 3, 'attr_new': 'new'}
+
+# #________________  декоратор @property  ____________________
+# # используется для работы с приватными атрибутами
+# class Person:
+#     def __init__(self, name, old):
+#         self.__name = name
+#         self.__old = old
+#
+#     # для работы с приватными свойствами необходимо написать сеттеры и геттеры - публичные методы, для
+#     # работы с приватными свойствами
+#     def get_old(self):
+#         return self.__old
+#
+#     def set_old(self, old):
+#         self.__old = old
+#
+#     def get_name(self):
+#         return self.__name
+#
+#     def set_name(self, name):
+#         self.__name = name
+#
+# p1 = Person("Vika", 33)
+# p1.set_old(34)
+# print(p1.get_old()) # 34
+# # таким способом получается, что для каждого атрибута надо прописать свой сеттер и геттер
+
+# class Person:
+#     def __init__(self, name, old):
+#         self.__name = name
+#         self.__old = old
+#
+#     # для работы с приватными свойствами необходимо написать сеттеры и геттеры - публичные методы, для
+#     # работы с приватными свойствами
+#     def get_old(self):
+#         return self.__old
+#
+#     def set_old(self, old):
+#         self.__old = old
+#
+#     old = property(get_old, set_old) # создаем экземпляр объекта property(геттер, сеттер)
+# # когда идет вызов атрибута old(property)автоматически вызывается геттер, а при передаче значения сеттер
+# p1 = Person("Vika", 33)
+# a = p1.old
+# print(a)  # 33
+# p1.old = 35
+# print(p1.old)  # 35
+# print(p1.__dict__)  # {'_Person__name': 'Vika', '_Person__old': 35} # при этом в локальном пространстве этого свойства
+# # old нет
+# # атрибут = property имеет высокий приоритет, и даже если в экземпляре класса будет атрибут old, вызываться будет
+# # именно этот атрибут
+
+# чтобы убедиться в этом, искусственно создадим локальное свойство old, через __dict__
+# class Person:
+#     def __init__(self, name, old):
+#         self.__name = name
+#         self.__old = old
+#
+#     def get_old(self):
+#         return self.__old
+#
+#     def set_old(self, old):
+#         self.__old = old
+#
+#     old = property(get_old, set_old)
+#
+# p1 = Person("Vika", 33)
+# p1.__dict__['old'] = "локальное свойство"
+# p1.old = 35 # обращение к свойству property, а не к созданной локальной переменной
+# print(p1.old) # все равно выводит 35
+# print(p1.__dict__) # {'_Person__name': 'Vika', '_Person__old': 35, 'old': 'локальное свойство'} при этом это
+# локальное свойство существует
+
+# # если атрибут будет обычным, то приоритет наоборот у локальных свойств, сначала используется локальное свойство
+# экземпляра класса, а если его нет, тогда свойство самого класса
+# class Person:
+#     def __init__(self, name, old):
+#         self.__name = name
+#         self.__old = old
+#
+#     def get_old(self):
+#         return self.__old
+#
+#     def set_old(self, old):
+#         self.__old = old
+#
+#     old = 5
+#
+# p1 = Person("Vika", 33)
+# p1.__dict__['old'] = "локальное свойство"
+# print(p1.old) # локальное свойство
+# print(p1.__dict__) # {'_Person__name': 'Vika', '_Person__old': 33, 'old': 'локальное свойство'}
+
+# свойство property удобно тем, что не надо запоминать названия все геттеров и сеттеров
+# у класса property есть методы setter(), getter, deleter() - это декораторы, которые можно использовать при создании
+# объекта свойства
+# можно записать используя эти декораторы
+# old = property()
+# old = old.getter(get_old)
+# old = old.setter(set_old)
+# также отработает, поэтому методы класса можно переписать иначе
+
+# class Person:
+#     def __init__(self, name, old):
+#         self.__name = name
+#         self.__old = old
+#
+#     @property # декоратор property прописывается перед геттером
+#     def old(self):
+#         return self.__old
+#
+#     @old.setter # а перед сеттером уже через @get_old (стало объектом Property) вызов декоратора сеттер
+#     def old(self, old): # !!! но необходимо переименовать метод, чтобы он также назывался
+#         self.__old = old
+#
+#     @old.deleter
+#     def old(self):
+#         del self.__old
+# #
+# p1 = Person("Vika", 33)
+# p1.old = 35 # методы теперь оба называются get_old (как было с примером old)
+# print(p1.old) # 35 новое значение установилось и вывелось, только без отдельного выноса property
+# # вот так чаще всего на практике и используют
+# del p1.old # удаление __old
+# print(p1.__dict__) # {'_Person__name': 'Vika'} свойство удалено
+
+
