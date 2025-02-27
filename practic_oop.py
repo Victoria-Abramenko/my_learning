@@ -1198,4 +1198,222 @@
 # del p1.old # удаление __old
 # print(p1.__dict__) # {'_Person__name': 'Vika'} свойство удалено
 
+# _____________ пример использования объектов property ________________
+
+# Person ФИО, возраст (от 14 до 55), серия номер паспорта (в формате xxxx xxxxxx), где x целое число
+
+# от 0 до 9, вес в кг от 20 и больше - вещественное число
+
+# ФИО - список из 3 строк
+
+# возраст - целое число
+
+# паспорт - строка в нужном формате
+
+# вес - вещественное число
+# _____________  пример использования объектов property  ________________
+# Person ФИО, возраст (от 14 до 55), серия номер паспорта (в формате xxxx xxxxxx), где x целое число
+# от 0 до 9, вес в кг от 20 и больше - вещественное число
+# ФИО - список из 3 строк
+# возраст - целое число
+# паспорт - строка в нужном формате
+# вес - вещественное число
+#
+# from string import ascii_letters
+# class Person:
+#     S_RUS = "абвгдежзиклмнопрстуфхцчщъыьэюя"
+#     S_RUS_UPPER = S_RUS.upper()
+#
+#     def __init__(self, fio, old, ps, weight):
+#         self.verify_fio(fio) # если этот метод отработает без ошибок, то программа пойдет дальше
+#         self.verify_old(old)
+#         self.verify_passport(ps)
+#         self.verify_weight(weight)
+#
+#         self.__fio = fio.split()  # разбиваем строку на строки
+#         self.__old = old
+#         self.__passport = ps
+#         self.__weight = weight
+#
+#     @classmethod
+#     def verify_fio(cls, fio):
+#         if type(fio) != str:  # проверка, чтобы данные были строкой
+#             raise ValueError("Некоррекные данные")
+#
+#         fio_list = fio.split()
+#         if len(fio_list ) != 3:  # проверяем чтобы в списке была и фамилия и имя и отчество
+#             raise ValueError("Неверный формат записи")
+#
+#         # создаем вспомогательную переменную, которая будет содержать список допустимых символов
+#         # ascii_letters набор латинских букв малых и больших
+#         # cls.S_RUS набор руских букв
+#         # cls.S_RUS_UPPER набор русских заглавных букв
+#         letters = ascii_letters + cls.S_RUS + cls.S_RUS_UPPER
+#
+#         for elem in fio_list:
+#             if len(elem ) < 1:
+#                 raise TypeError("Должен быть хотя бы 1 символ")
+#             if len(elem .strip(letters)) != 0: # проверка на допустимые символы
+#                 raise TypeError("Содержаться недопустимые символы")
+#             # реализация через len - если допустимый символ, то сработает метод strip, который удалит
+#             # этот символ, а значит длина = 0
+#
+#     @classmethod
+#     def verify_old(cls, old):
+#         if type(old) != int or old < 14 or old > 55:
+#             raise TypeError("Неверно указан возраст")
+#
+#     @classmethod
+#     def verify_weight(cls, w):
+#         if type(w) != float or w < 20:
+#             raise TypeError("Вес указан не корректно")
+#
+#     @classmethod
+#     def verify_passport(cls, ps):
+#         if type(ps) != str:
+#             raise TipeError("Не является строкой")
+#
+#         s = ps.split() # деление строки по пробелу (список из 2 элементов, в 1й строке 4 символа, во второй 6
+#         if len(s) != 2 or len(s[0]) != 4 or len(s[1]) != 6:
+#             raise TypeError("Неверный формат паспорта")
+#
+#         for i in s:
+#             if not i.isdigit():  # проверка на цифры
+#                 raise TypeError("Указаны не цифры")
+# # Затем все эти методы необходимо вызвать перед атрибутами, чтобы провести проверку до их присвоения
+#
+#     @property
+#     def fio(self):  # создаем геттер для работы с фио, причем сеттер необязательно задавать, если не планируется изменение
+#         return self.__fio
+#
+#     @property
+#     def old(self):
+#         return self.__old
+#
+#     @old.setter
+#     def old(self, old):
+#         self.verify_old(old)
+#         self.__old = old  # прежде чем присвоить новое значение, следует сделать проверку
+#
+#     @property
+#     def passport(self):
+#         return self.__passport
+#
+#     @passport.setter
+#     def passport(self, ps):
+#         self.verify_passport(ps)
+#         self.__passport = ps
+#
+#     @property
+#     def weight(self):
+#         return self.__weight
+#
+#     @weight.setter
+#     def weight(self, weight):
+#         self.verify_weight(weight)
+#         self.__weight = weight
+#
+# p1 = Person("Иванов Иван Иванович", 30, "1234 567890", 75.3)
+# p1.old = 33
+# p1.weight = 120.0
+# print(p1.__dict__)
+# # {'_Person__fio': ['Иванов', 'Иван', 'Иванович'], '_Person__old': 33, '_Person__passport': '1234 567890', '_Person__weight': 120.0}
+# print(p1.passport)  # 1234 567890
+
+# поскольку мы опредили геттер, можно переписать атрибуты (все кроме fio, так как ему мы не написали сеттер)
+
+# from string import ascii_letters
+# class Person:
+#     S_RUS = "абвгдежзиклмнопрстуфхцчщъыьэюя"
+#     S_RUS_UPPER = S_RUS.upper()
+#
+#     def __init__(self, fio, old, ps, weight):
+#         self.verify_fio(fio) # остальные проверка запустится из геттера
+#
+#         self.__fio = fio.split()
+#         self.old = old  # присваиваем методы
+#         self.passport = ps
+#         self.weight = weight
+#
+#     @classmethod
+#     def verify_fio(cls, fio):
+#         if type(fio) != str:  # проверка, чтобы данные были строкой
+#             raise ValueError("Некоррекные данные")
+#
+#         fio_list = fio.split()
+#         if len(fio_list ) != 3:  # проверяем чтобы в списке была и фамилия и имя и отчество
+#             raise ValueError("Неверный формат записи")
+#
+#         letters = ascii_letters + cls.S_RUS + cls.S_RUS_UPPER
+#
+#         for elem in fio_list:
+#             if len(elem ) < 1:
+#                 raise TypeError("Должен быть хотя бы 1 символ")
+#             if len(elem .strip(letters)) != 0:
+#                 raise TypeError("Содержаться недопустимые символы")
+#
+#     @classmethod
+#     def verify_old(cls, old):
+#         if type(old) != int or old < 14 or old > 55:
+#             raise TypeError("Неверно указан возраст")
+#
+#     @classmethod
+#     def verify_weight(cls, w):
+#         if type(w) != float or w < 20:
+#             raise TypeError("Вес указан не корректно")
+#
+#     @classmethod
+#     def verify_passport(cls, ps):
+#         if type(ps) != str:
+#             raise TipeError("Не является строкой")
+#
+#         s = ps.split()
+#         if len(s) != 2 or len(s[0]) != 4 or len(s[1]) != 6:
+#             raise TypeError("Неверный формат паспорта")
+#
+#         for i in s:
+#             if not i.isdigit():  # проверка на цифры
+#                 raise TypeError("Указаны не цифры")
+#
+#
+#     @property
+#     def fio(self):
+#         return self.__fio
+#
+#     @property
+#     def old(self):
+#         return self.__old
+#
+#     @old.setter
+#     def old(self, old):
+#         self.verify_old(old)
+#         self.__old = old
+#
+#     @property
+#     def passport(self):
+#         return self.__passport
+#
+#     @passport.setter
+#     def passport(self, ps):
+#         self.verify_passport(ps)
+#         self.__passport = ps
+#
+#     @property
+#     def weight(self):
+#         return self.__weight
+#
+#     @weight.setter
+#     def weight(self, weight):
+#         self.verify_weight(weight)
+#         self.__weight = weight
+#
+# p1 = Person("Иванов Иван Иванович", 30, "1234 567890", 75.3)
+# p1.old = 33
+# p1.weight = 120.0
+# print(p1.__dict__)
+# # {'_Person__fio': ['Иванов', 'Иван', 'Иванович'], '_Person__old': 33, '_Person__passport': '1234 567890', '_Person__weight': 120.0}
+# print(p1.passport)  # 1234 567890
+
+
+
 
