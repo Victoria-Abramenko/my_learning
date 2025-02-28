@@ -1414,6 +1414,63 @@
 # # {'_Person__fio': ['Иванов', 'Иван', 'Иванович'], '_Person__old': 33, '_Person__passport': '1234 567890', '_Person__weight': 120.0}
 # print(p1.passport)  # 1234 567890
 
+# у объектов свойств есть недостаток - повторение кода для каждого атрибута
+# class Point3d:
+#     # def __init__(self, x, y, z):
+#     #     self._x = x
+#     #     self._y = y
+#     #     self._z = z
+#     # так как мы прописали сеттеры и геттеры(_x...), в инициализаторе можно просто присвоить методы.
+#
+#     def __init__(self, x, y, z): # при такой записи будет срабатывать соответсвующий сеттер
+#         self.x = x
+#         self.y = y
+#         self.z = z
+#
+#     @classmethod
+#     def verify_coord(cls, coord):
+#         if type(coord) != int:
+#             raise TypeError("Координата должна быть целым числом")
+#
+#     @property
+#     def x(self):
+#         return self._x
+#
+#     @x.setter
+#     def x(self, coord):
+#         self.verify_coord(coord) # проводим проверку, и только потом присваиваем
+#         self._x = coord
+#
+#     @property
+#     def y(self):
+#         return self._y
+#
+#     @y.setter
+#     def y(self, coord):
+#         self.verify_coord(coord)
+#         self._y = coord
+#
+#     @property
+#     def z(self):
+#         return self._z
+#
+#     @z.setter
+#     def z(self, coord):
+#         self.verify_coord(coord)
+#         self._z = coord
+#
+# p = Point3d(1, 2, 3)
+# print(p.__dict__) # {'_x': 1, '_y': 2, '_z': 3} локальные переменные созданы без ошибок
 
+# с этой проблемой помогут дескрипторы
+# ____________________  Дескрипторы  _________________
+# дескриптор - класс, который содержит магический метод
+# class A __get__ - дескриптор не данных (non-data descriptor)
+# class B __get__ + __set__ и / или  __del__ - дескриптор данных (data descriptor)
+# создаем дескриптор(класс), а затем создать его экземпляры в классе Point - x = Integer(), y = Integer(), x = Integer()
+# __get__(self<ссылка на экземпляр этого дескриптора>, instance<на экземпляр класса>, owner<ссылка на класс>)
+# __set_name__(self<ссылка на экземпляр этого дескриптора>, owner <ссылка на класс>, name <имя, которому присваивается экземпляр дескриптора>)
+#__set__(self<ссылка на экземпляр этого дескриптора>, instance<ссылка на экземпляр класса>, value<значение>)
+# благодаря параметрам сеттеры и геттеры реализованы универсальным способом
 
 
