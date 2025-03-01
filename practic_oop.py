@@ -1473,4 +1473,125 @@
 #__set__(self<ссылка на экземпляр этого дескриптора>, instance<ссылка на экземпляр класса>, value<значение>)
 # благодаря параметрам сеттеры и геттеры реализованы универсальным способом
 
+# # в момент создания в классе экземпляров дескриптора запускается метод __set_name__
+# # в момент срабатывания инициализатора(т.е при создании экземпляра класса) срабатывает сеттер (__set__)
+# # при обращении через экземпляр класса к атрибуту срабатывает геттер (__get__)
+# class Integer_point:
+#     @classmethod  # метод проверки также перенесем в класс Integer_point
+#     def verify_coord(cls, coord):
+#         if type(coord) != int:
+#             raise TypeError("Координата должна быть целым числом")
+#
+#     def __set_name__(self, owner, name): # для формирования локального свойства, к которому потом будем обращаться
+#         self.name = "_" + name # x = _x
+#
+#     def __set__(self, instance, value):
+#         self.verify_coord(value) # проверяем значение, прежде чем его присвоить
+#         instance.__dict__[self.name] = value # p1.__dict__[self._x] = 1, p1.__dict__[self._y] = 2, p1.__dict__[self._z] = 3
+#
+#     def __get__(self, instance, owner):
+#         return instance.__dict__[self.name] # return p1.__dict__[self._x], return p1.__dict__[self._y], return p1.__dict__[self._z]
+#
+# class Point3d:
+#     x = Integer_point() # формируем дескрипторы для взаимодействия с координаторами
+#     y = Integer_point()
+#     z = Integer_point()
+#
+#     def __init__(self, x, y, z): # Этим дескрипторам присваиваем значения(имя координаты), срабатавает метод __set_name__,
+#         # в результате переменные получаться с подчеркиванием
+#         self.x = x # _x | self.x это первый экземпляр Integer_point
+#         self.y = y # _y | self.y это второй экземпляр Integer_point
+#         self.z = z # _z | self.z это третий экземпляр Integer_point
+#
+#     # @classmethod # метод проверки также перенесем в класс Integer_point
+#     # def verify_coord(cls, coord):
+#     #     if type(coord) != int:
+#     #         raise TypeError("Координата должна быть целым числом")
+#
+# p1 = Point3d(1, 2, 3)
+# print(p1.__dict__) # {'_x': 1, '_y': 2, '_z': 3}
+# # p2 = Point3d(1.1, 2, 3) # TypeError: Координата должна быть целым числом - проверка сработала
 
+# в дескрипторе также можно упростить код, используя специальные функции setattr и getattr, это более правильный способ
+# class Integer_point:
+#     @classmethod
+#     def verify_coord(cls, coord):
+#         if type(coord) != int:
+#             raise TypeError("Координата должна быть целым числом")
+#
+#     def __set_name__(self, owner, name):
+#         self.name = "_" + name # x = _x
+#
+#     def __set__(self, instance, value):
+#         self.verify_coord(value)
+#         setattr(instance, self.name, value) # getattr(<область видимости объекта>, <название этого атрибута>, <значение>
+#         # которое хотим присвоить)
+#
+#     def __get__(self, instance, owner):
+#         return getattr(instance, self.name)  # для работы с локальными переменными getattr(<область видимости объекта>
+#         # из которого хотим взять аргумент, <название этого атрибута> которое хранится в self.name)
+#
+# class Point3d:
+#     x = Integer_point()
+#     y = Integer_point()
+#     z = Integer_point()
+#
+#     def __init__(self, x, y, z):
+#         self.x = x
+#         self.y = y
+#         self.z = z
+#
+#
+#
+# p1 = Point3d(1, 2, 3)
+# print(p1.__dict__)  # {'_x': 1, '_y': 2, '_z': 3}
+# это дескриптор данных - на его основе мы создали координаты
+
+# дескриптор не данных - они могут только считывать данные, плюс приоритет считывания такой же как у атрибутов класса
+# добавим такой дескриптор в нашу программу
+class Read_x: # создаем класс не данных
+    def __set_name__(self, owner, name):
+        self.name = "_x" # метод именно для чтения x, поэтому локальная переменная _x
+
+    def __get__(self, instance, owner):
+        return getattr(instance, self.name)
+
+class Integer_point:
+    @classmethod
+    def verify_coord(cls, coord):
+        if type(coord) != int:
+            raise TypeError("Координата должна быть целым числом")
+
+    def __set_name__(self, owner, name):
+        self.name = "_" + name # x = _x
+
+    def __set__(self, instance, value):
+        self.verify_coord(value)
+        setattr(instance, self.name, value) # getattr(<область видимости объекта>, <название этого атрибута>, <значение>
+        # которое хотим присвоить)
+
+    def __get__(self, instance, owner):
+        return getattr(instance, self.name)  # для работы с локальными переменными getattr(<область видимости объекта>
+        # из которого хотим взять аргумент, <название этого атрибута> которое хранится в self.name)
+
+class Point3d:
+    x = Integer_point()
+    y = Integer_point()
+    z = Integer_point()
+    xr = Read_x() # это дескриптор не данных
+
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+
+
+p1 = Point3d(1, 2, 3)
+print(p1.xr)  # 1
+# но при присвоении другого значения ошибки не возникнет, а создастся новая переменная с этим значением
+p1.xr = 5
+print(p1.__dict__) # {'_x': 1, '_y': 2, '_z': 3, 'xr': 5}
+# То есть мы просто создали локальный атрибут xr, словно дескриптора xr нет
+# а вот у  дескриптора данных приоритет выше
+# но в целом на практике используется редко
