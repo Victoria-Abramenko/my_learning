@@ -1547,51 +1547,181 @@
 # print(p1.__dict__)  # {'_x': 1, '_y': 2, '_z': 3}
 # это дескриптор данных - на его основе мы создали координаты
 
-# дескриптор не данных - они могут только считывать данные, плюс приоритет считывания такой же как у атрибутов класса
-# добавим такой дескриптор в нашу программу
-class Read_x: # создаем класс не данных
-    def __set_name__(self, owner, name):
-        self.name = "_x" # метод именно для чтения x, поэтому локальная переменная _x
+# # дескриптор не данных - они могут только считывать данные, плюс приоритет считывания такой же как у атрибутов класса
+# # добавим такой дескриптор в нашу программу
+# class Read_x: # создаем класс не данных
+#     def __set_name__(self, owner, name):
+#         self.name = "_x" # метод именно для чтения x, поэтому локальная переменная _x
+#
+#     def __get__(self, instance, owner):
+#         return getattr(instance, self.name)
+#
+# class Integer_point:
+#     @classmethod
+#     def verify_coord(cls, coord):
+#         if type(coord) != int:
+#             raise TypeError("Координата должна быть целым числом")
+#
+#     def __set_name__(self, owner, name):
+#         self.name = "_" + name # x = _x
+#
+#     def __set__(self, instance, value):
+#         self.verify_coord(value)
+#         setattr(instance, self.name, value) # getattr(<область видимости объекта>, <название этого атрибута>, <значение>
+#         # которое хотим присвоить)
+#
+#     def __get__(self, instance, owner):
+#         return getattr(instance, self.name)  # для работы с локальными переменными getattr(<область видимости объекта>
+#         # из которого хотим взять аргумент, <название этого атрибута> которое хранится в self.name)
+#
+# class Point3d:
+#     x = Integer_point()
+#     y = Integer_point()
+#     z = Integer_point()
+#     xr = Read_x() # это дескриптор не данных
+#
+#     def __init__(self, x, y, z):
+#         self.x = x
+#         self.y = y
+#         self.z = z
+#
+#
+#
+# p1 = Point3d(1, 2, 3)
+# print(p1.xr)  # 1
+# # но при присвоении другого значения ошибки не возникнет, а создастся новая переменная с этим значением
+# p1.xr = 5
+# print(p1.__dict__) # {'_x': 1, '_y': 2, '_z': 3, 'xr': 5}
+# # То есть мы просто создали локальный атрибут xr, словно дескриптора xr нет
+# # а вот у  дескриптора данных приоритет выше
+# # но в целом на практике используется редко
 
-    def __get__(self, instance, owner):
-        return getattr(instance, self.name)
+# магические методы еще называют - dunder-методы (от англ. double underscope двлйное почеркивание)
 
-class Integer_point:
-    @classmethod
-    def verify_coord(cls, coord):
-        if type(coord) != int:
-            raise TypeError("Координата должна быть целым числом")
+# # ______________________  магический метод __call__  ______________________
+# # на примере класса счетчика
+# class Counter:
+#     def __init__(self):
+#         self.__counter = 0
+#
+# c = Counter() # __call__ автоматически запускается при вызове класса Class_name()
 
-    def __set_name__(self, owner, name):
-        self.name = "_" + name # x = _x
+# # в этом методе, сначала вызывается __new__, затем __init__
+# # упрощенная схема реализации метода
+# # def __call__(self, *args, **kwargs):
+# #     obj = self.__new__(self, *args, **kwargs)
+# #     self.__init__(obj, *args, **kwargs)
+# #     return obj
+# # благодаря этому методу класс можно вызывать, как функцию(), а вот экземпляр класса, так уже вызвать нельзя,
+# # это приведет к ошибке
+#
+# c() # TypeError: 'Counter' object is not callable
+# так как в них не определен магический метод __call__
 
-    def __set__(self, instance, value):
-        self.verify_coord(value)
-        setattr(instance, self.name, value) # getattr(<область видимости объекта>, <название этого атрибута>, <значение>
-        # которое хотим присвоить)
+# # можно прописать метод для экземплчров класса. Например, подсчет вызовов
+# class Counter:
+#     def __init__(self):
+#         self.__counter = 0
+#
+#     def __call__(self, *args, **kwargs):
+#         self.__counter += 1
+#         return self.__counter
+#
+# c = Counter()
+# c2 = Counter() # второй экземпляр класса. Оба счетчика будут независимы друг от друга
+# c() # не приведет к ошибке
+# c()
+# c2()
+# res = c()
+# res2 = c2()
+# print(res) #  3
+# print(res2) #  2
+# # у счетчиков разные значения, не зависимые друг от друга
+# # экземпляры классов, которые можно вызывать подобно функциям называются функторы
+#
+# class Counter:
+#     def __init__(self):
+#         self.__counter = 0
+#
+#     def __call__(self, step=1, *args, **kwargs): # можно прописывать дополнительные аргументы, например величину шага
+#         self.__counter += step
+#         return self.__counter
+#
+# c = Counter()
+# c2 = Counter()
+# c()
+# c(2)
+# c2(3)
+# res = c(2)
+# res2 = c2(3)
+# print(res)  # 5
+# print(res2)  # 6
 
-    def __get__(self, instance, owner):
-        return getattr(instance, self.name)  # для работы с локальными переменными getattr(<область видимости объекта>
-        # из которого хотим взять аргумент, <название этого атрибута> которое хранится в self.name)
+# # Где применяется - например, класс удаления определенных символов в конце строки, вместо использования замыкания функции
+# class Strip_chars:
+#     def __init__(self, chars): # здесь сохраним коллекцию символов, которые будем удалять в строке
+#         self.__chars = chars
+#
+#     def __call__(self, *args, **kwargs):
+#         if not isinstance(args[0], str): # проверяем, что переданный элемент является строкой, если нет вывести исключение
+#             raise TypeError("Аргумент должен быть строкой")
+#
+#         return args[0].strip(self.__chars) # возвращаем строку с удаленными символами
+#
+# s1 = Strip_chars(" !#$%^&?.*,")
+# s2 = Strip_chars(" ")# создаем экземпляр класса и передаем в него символы для удаления
+# res = s1("*** hello world! ***")  # вызываем этот экземляр класса и передеем внего строку, у которой хотим удалить символы
+# res2 = s2("*** hello world! ***")  # этот экземляр отработает независимо от первого даже если передать ту же строку
+#
+# print(res, res2, sep="\n")
+# # hello world
+# # *** hello world! ***
 
-class Point3d:
-    x = Integer_point()
-    y = Integer_point()
-    z = Integer_point()
-    xr = Read_x() # это дескриптор не данных
+# # как второй пример, в качестве реализации декоратора
+# import math
+#
+# class Derivate:
+#     def __init__(self, func): # здесь передаем функцию, функционал которой будем расширять
+#         self.__fn = func
+#
+#     def __call__(self, x, dx = 0.0001, *args, **kwargs): # в качестве аргументов переменную, для которой будем вычислять производную,
+#     # и шаг производной
+#         return (self.__fn(x + dx) - self.__fn(x)) / dx
+#
+# def df_sin(x):  # для функции синуса
+#     return math.sin(x)
+#
+# print(df_sin(math.pi / 3 # 0.8660254037844386 вычисляем синус от числа pi / 3
 
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-
-
-
-p1 = Point3d(1, 2, 3)
-print(p1.xr)  # 1
-# но при присвоении другого значения ошибки не возникнет, а создастся новая переменная с этим значением
-p1.xr = 5
-print(p1.__dict__) # {'_x': 1, '_y': 2, '_z': 3, 'xr': 5}
-# То есть мы просто создали локальный атрибут xr, словно дескриптора xr нет
-# а вот у  дескриптора данных приоритет выше
-# но в целом на практике используется редко
+# # применить класс в качестве декоратора можно двумя способами:
+# # 1й способ
+# import math
+#
+# class Derivate:
+#     def __init__(self, func):
+#         self.__fn = func
+#
+#     def __call__(self, x, dx = 0.0001, *args, **kwargs):
+#         return (self.__fn(x + dx) - self.__fn(x)) / dx
+#
+# def df_sin(x):
+#     return math.sin(x)
+#
+# df_sin = Derivate(df_sin)  # функции присваиваем класс, с ссылкой на эту функцию (df_sin - стала экземпляром класса Derivate)
+# print(df_sin(math.pi / 3)) # 0.4999566978958203
+#
+# # 2й способ
+# import math
+#
+# class Derivate:
+#     def __init__(self, func):
+#         self.__fn = func
+#
+#     def __call__(self, x, dx = 0.0001, *args, **kwargs):
+#         return (self.__fn(x + dx) - self.__fn(x)) / dx
+#
+# @Derivate
+# def df_sin(x):
+#     return math.sin(x)
+#
+# print(df_sin(math.pi / 3))  # 0.4999566978958203
