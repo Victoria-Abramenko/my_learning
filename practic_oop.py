@@ -1798,3 +1798,66 @@
 #
 # p1 = Point(1, 2, -3)
 # print(abs(p1)) # [1, 2, 3]
+
+# #_________________  магические методы арифметических операций  _______________________
+# # __add__ - для операции сложения
+# # __sub__ - для операции вычитания
+# # __mul__ - для операции умножения
+# # __truediv__ - для операции деления
+# class Clock:
+#     __Day = 86400  # максимальное количество секунд в дне
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     def get_time(self):
+#         s = self.seconds % 60  # текущее число секунд
+#         m = (self.seconds // 60) % 60  # текущее число минут (self.seconds // 60 - минуты) (% 60 - отбрасываем те минуты, которые уйдут в часы)
+#         h = (self.seconds // 3600) % 24  #  текущее число часов (self.seconds // 3600) - количество сек в часе (% 24 так как в сутках 24 часа)
+#         return f"{self.__get_formated(h)}:{self.__get_formated(m)}:{self.__get_formated(s)}" # вернем отформатированную при помощи метода строку
+#
+#     @classmethod
+#     def __get_formated(cls, x):
+#         return str(x).rjust(2, "0") # число преобразуем в строку и добавляем незначащие нули (вначале)
+#         # если будет число 7, то строка 07
+#
+# c1 = Clock(3546) # создаем экземпляр класса с количеством секунд
+# # print(c1.get_time())  # 00:59:06
+# # если, например, необходимо увеличить время
+# c1.seconds = c1.seconds + 30
+# print(c1.get_time())  # 00:59:36
+#
+# # чтобы это можно было записать работая только с экземплярами класса c1 = c1 + 30 (не обращаясь к конкретному атрибуту),
+# # необходимо в класс добавить магический метод:
+# __truediv__ - для операции деления
+class Clock:
+    __Day = 86400  # максимальное количество секунд в дне
+
+    def __init__(self, seconds: int):
+        if not isinstance(seconds, int):
+            raise TypeError("Секунды должны быть целым числом")
+        self.seconds = seconds % self.__Day
+
+    def get_time(self):
+        s = self.seconds % 60
+        m = (self.seconds // 60) % 60
+        h = (self.seconds // 3600) % 24
+        return f"{self.__get_formated(h)}:{self.__get_formated(m)}:{self.__get_formated(s)}"
+
+    @classmethod
+    def __get_formated(cls, x):
+        return str(x).rjust(2, "0")
+
+    def __add__(self, other):  # other то значение, на которое хотим изменить
+        if not isinstance(other, int):
+            raise ArithmeticError("Прибавлять можно только целые число")
+        return Clock(self.seconds + other)# возвращаем новый экземпляр класса с новым количеством секунд
+
+c1 = Clock(3546)
+c1 = c1 + 30
+print(c1.get_time()) # 00:59:36
+
+
+
