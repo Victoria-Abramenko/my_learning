@@ -1831,33 +1831,136 @@
 #
 # # чтобы это можно было записать работая только с экземплярами класса c1 = c1 + 30 (не обращаясь к конкретному атрибуту),
 # # необходимо в класс добавить магический метод:
-# __truediv__ - для операции деления
-class Clock:
-    __Day = 86400  # максимальное количество секунд в дне
+# # __truediv__ - для операции деления
+# class Clock:
+#     __Day = 86400  # максимальное количество секунд в дне
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     def get_time(self):
+#         s = self.seconds % 60
+#         m = (self.seconds // 60) % 60
+#         h = (self.seconds // 3600) % 24
+#         return f"{self.__get_formated(h)}:{self.__get_formated(m)}:{self.__get_formated(s)}"
+#
+#     @classmethod
+#     def __get_formated(cls, x):
+#         return str(x).rjust(2, "0")
+#
+#     def __add__(self, other):  # other то значение, на которое хотим изменить
+#         if not isinstance(other, int):
+#             raise ArithmeticError("Прибавлять можно только целые числа")
+#         return Clock(self.seconds + other)# возвращаем новый экземпляр класса с новым количеством секунд
+#
+# c1 = Clock(3546)
+# c1 = c1 + 30  # c1.__add__(30)
+# print(c1.get_time()) # 00:59:36
 
-    def __init__(self, seconds: int):
-        if not isinstance(seconds, int):
-            raise TypeError("Секунды должны быть целым числом")
-        self.seconds = seconds % self.__Day
+# можно также реализовать, чтобы вторым операндом также был экземпляр класса
+# class Clock:
+#     __Day = 86400  # максимальное количество секунд в дне
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     def get_time(self):
+#         s = self.seconds % 60
+#         m = (self.seconds // 60) % 60
+#         h = (self.seconds // 3600) % 24
+#         return f"{self.__get_formated(h)}:{self.__get_formated(m)}:{self.__get_formated(s)}"
+#
+#     @classmethod
+#     def __get_formated(cls, x):
+#         return str(x).rjust(2, "0")
+#
+#     def __add__(self, other):
+#         if not isinstance(other, (int, Clock)):
+#             raise ArithmeticError("Прибавлять можно только целые числа или класс Clock")
+#
+#         st = other
+#         if isinstance(other, Clock): # если в метод передается класс, то ссылается на seconds
+#             st = other.seconds
+#         return Clock(self.seconds + st) # если передаем число, то сложение будет с числом, а если класс, то с его секундами
+#
+# # c1 = Clock(3546)
+# # c2 = Clock(2278)
+# # c3 = c1 + c2  # c1.__add__(c2)
+# # print(c3.get_time())  # 01:37:04
 
-    def get_time(self):
-        s = self.seconds % 60
-        m = (self.seconds // 60) % 60
-        h = (self.seconds // 3600) % 24
-        return f"{self.__get_formated(h)}:{self.__get_formated(m)}:{self.__get_formated(s)}"
+# # даже если добавить еще экземпляр класса этот метод отработает, так как сложение будет выполняться последовательно
+# c1 = Clock(3546)
+# c2 = Clock(2278)
+# c3 = Clock(3451)
+# c4 = c1 + c2 + c3 # c1.__add__(c2) -> временная_переменная = Clock(5824) -> временная_переменная .__add__(c3)
+# print(c4.get_time())  # 02:34:35
 
-    @classmethod
-    def __get_formated(cls, x):
-        return str(x).rjust(2, "0")
+# порядок записи имеет значение, так как 
+# c1 = Clock(3546)
+# c1 = 30  + c1 # приведет к ошибке, так как в этом случае __add__ вызывается для Int
+# print(c1.get_time())  # TypeError: unsupported operand type(s) for +: 'int' and 'Clock'
 
-    def __add__(self, other):  # other то значение, на которое хотим изменить
-        if not isinstance(other, int):
-            raise ArithmeticError("Прибавлять можно только целые число")
-        return Clock(self.seconds + other)# возвращаем новый экземпляр класса с новым количеством секунд
+# # для такого случая есть магический метод __radd__, но он работает с методом __add__
+# class Clock:
+#     __Day = 86400
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     def get_time(self):
+#         s = self.seconds % 60
+#         m = (self.seconds // 60) % 60
+#         h = (self.seconds // 3600) % 24
+#         return f"{self.__get_formated(h)}:{self.__get_formated(m)}:{self.__get_formated(s)}"
+#
+#     @classmethod
+#     def __get_formated(cls, x):
+#         return str(x).rjust(2, "0")
+#
+#     def __add__(self, other):
+#         if not isinstance(other, (int, Clock)):
+#             raise ArithmeticError("Прибавлять можно только целые числа или класс Clock")
+#
+#         st = other
+#         if isinstance(other, Clock):
+#             st = other.seconds
+#         return Clock(self.seconds + st)
+#
+#     def __radd__(self, other):
+#         return self + other # self = c1, other = 30 -> c1 + 30 -> c1.__add__(30)
+#
+#     def __iadd__(self, other): # срабатывает при +=
+#         if not isinstance(other, (int, Clock)):
+#             raise ArithmeticError("Прибавлять можно только целые числа или класс Clock")
+#
+#         st = other
+#         if isinstance(other, Clock):
+#             st = self.seconds
+#
+#         self.seconds += st
+#         return self
+#
+#
+# # c1 = Clock(3546)
+# # c1 = 30 + c1 # метод __radd__ срабатывает для экземпляра класса, расположенного справа
+# # print(c1.get_time())  # 00:59:36
+#
+# # для сокращенного варианта += используется __iadd__
+# c1 = Clock(3546)
+# c1 += 30  # если не прописать метод __iadd__, то создастся новый экземпляр класса
+# print(c1.get_time())
 
-c1 = Clock(3546)
-c1 = c1 + 30
-print(c1.get_time()) # 00:59:36
-
-
-
+# по аналогии используются другие магические методы
+# оператор | метод
+# x + y | __add__(self, other)
+# x - y | __sub__(self, other)
+# x * y | __mul__(self, other)
+# x / y | __truediv__(self, other)
+# x // y | __floordiv__(self, other)
+# x % y | __mod__(self, other)
