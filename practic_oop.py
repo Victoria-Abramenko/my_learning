@@ -1964,3 +1964,140 @@
 # x / y | __truediv__(self, other)
 # x // y | __floordiv__(self, other)
 # x % y | __mod__(self, other)
+
+# # ____________  магические методы сравнения  ___________
+# # __eq__() | ==
+# # __ne__() | !=
+# # __lt__() | <
+# # __le__() | <=
+# # __gt__() | >
+# # __ge__() | =>
+# class Clock:
+#     __Day = 86400
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+# c1 = Clock(1000)
+# c2 = Clock(1000)
+# print(c1 == c2)  # False так сравниваются id экземпляров классов, а они разные, чтобы сравнить время, которое они хранят,
+# # необходимо переписать магический метод
+
+# class Clock:
+#     __Day = 86400
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     def __eq__(self, other): # вызовится при сравнении ==
+#         if not isinstance(other, (int, Clock)):  # делаем проверку, что вторым аргументов будет либо целое число, либо экземпляр класса
+#             raise TypeError("Сравнивать можно только с целым числом или экземпляром класса")
+#
+#         sc = other if isinstance(other, int) else other.seconds
+#         return self.seconds == sc
+#
+# c1 = Clock(1000)
+# c2 = Clock(1000)
+# print(c1 == c2) # True
+# print(c1 == 1000) # True
+# print(c1 == 2000)  # False
+# # при этом сравнение на неравенство отрабатывает, хотя магический метод в классе не прописан
+# print(c1 != 5000)  # True в этом случае выполняется not(c1 == c2), если не переопределить метод __ne__()
+# print(c1 != 1000) # False
+# # а сравнение на больше или меньше уже выдаст ошибку, если не переопределить магический метод
+# print(c1 > c2)  # TypeError: '>' not supported between instances of 'Clock' and 'Clock'
+
+# class Clock:
+#     __Day = 86400
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     def __eq__(self, other): # вызовится при сравнении ==
+#         if not isinstance(other, (int, Clock)):  # делаем проверку, что вторым аргументов будет либо целое число, либо экземпляр класса
+#             raise TypeError("Сравнивать можно только с целым числом или экземпляром класса")
+#
+#         sc = other if isinstance(other, int) else other.seconds
+#         return self.seconds == sc
+#
+#     def __gt__(self, other):
+#         if not isinstance(other, (int, Clock)):
+#             raise TypeError("Сравнивать можно только с целым числом или экземпляром класса")
+#
+#         g = otger if isinstance(other, int) else other.seconds
+#         return self.seconds > g
+#
+# c1 = Clock(1000)
+# c2 = Clock(2000)
+# print(c1 > c2)  # False
+# print(c1 < c2)  # True так как python заменит это на c2 > c1 и сравнит их, даже без переопределения магического метода
+
+# но так дублируется код, чтобы исправить это, необходимо повторяющиеся строки вынести в отдельный метод
+# class Clock:
+#     __Day = 86400
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     @classmethod
+#     def __verify_data(cls, other):
+#         if not isinstance(other, (int, Clock)):
+#             raise TypeError("Сравнивать можно только с целым числом или экземпляром класса")
+#
+#         return other if isinstance(other, int) else other.seconds
+#
+#
+#     def __eq__(self, other):
+#         sc = self.__verify_data(other)
+#         return self.seconds == sc
+#
+#     def __gt__(self, other):
+#         sc = self.__verify_data(other)
+#         return self.seconds > sc
+#
+# c1 = Clock(1000)
+# c2 = Clock(2000)
+# print(c1 > c2)  # False
+# print(c1 < c2)  # True
+
+# # сравнение на >= Или <=
+# class Clock:
+#     __Day = 86400
+#
+#     def __init__(self, seconds: int):
+#         if not isinstance(seconds, int):
+#             raise TypeError("Секунды должны быть целым числом")
+#         self.seconds = seconds % self.__Day
+#
+#     @classmethod
+#     def __verify_data(cls, other):
+#         if not isinstance(other, (int, Clock)):
+#             raise TypeError("Сравнивать можно только с целым числом или экземпляром класса")
+#
+#         return other if isinstance(other, int) else other.seconds
+#
+#
+#     def __eq__(self, other):
+#         sc = self.__verify_data(other)
+#         return self.seconds == sc
+#
+#     def __gt__(self, other):
+#         sc = self.__verify_data(other)
+#         return self.seconds > sc
+#
+#     def __le__(self, other):
+#         sc = self.__verify_data(other)
+#         return self.seconds <= sc
+#
+# c1 = Clock(1000)
+# c2 = Clock(2000)
+# print(c1 >= c2)  # False, здесь по такому же принципу, просто операнды переставляются местами и идет проверка на <=
+# print(c1 <= c2)  # True
