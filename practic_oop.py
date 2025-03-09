@@ -2234,3 +2234,115 @@
 # else:
 #     print("Координаты точек не равны")
 
+# # _______________ магические методы __getitem__, __setitem__, __delitem__  __________________
+# # __getitem__(self, item) - получение значения по ключу
+# # __setitem__(self,key, item) - запись значения по ключу
+# # __delitem__(self, key) - удаление по ключу
+# # на примере класса Студентов (имя и его оценки)
+# class Students:
+#     def __init__(self, name, marks):
+#         self.name = name
+#         self.marks = list(marks)
+#
+# student1 = Students("Григорий", [4, 4, 3, 3, 5, 4])
+# print(student1.marks[2])   # 3
+
+# # если мы хотим обращаться к оценкам, используя только экземпляр класса, необходимо переопределить метод __getitem__
+# class Students:
+#     def __init__(self, name, marks):
+#         self.name = name
+#         self.marks = list(marks)
+#
+#     def __getitem__(self, item):  # [2] передается в item
+#         if 0 <= item < len(self.marks):
+#             return self.marks[item]
+#         else:
+#             raise IndexError("Такого индекса в списке нет")
+#
+# student1 = Students("Григорий", [4, 4, 3, 3, 5, 4])
+# print(student1[2]) # 3
+
+# # если необходимо изменить значение, обращаясь к экземпляру класса, то необходимо переопределить магический метод __setitem__
+# class Students:
+#     def __init__(self, name, marks):
+#         self.name = name
+#         self.marks = list(marks)
+#
+#     def __getitem__(self, item):  # [2] передается в item
+#         if 0 <= item < len(self.marks):
+#             return self.marks[item]
+#         else:
+#             raise IndexError("Такого индекса в списке нет")
+#
+#     def __setitem__(self, key, value):  # [2] - key, 4 - value
+#         if not isinstance(key, int) or key < 0: # можем прописать свои условия, например, чтобы индексы были только положительными
+#             raise TypeError("индекс должен быть целым и не отрицательным числом")
+#         self.marks[key] = value
+#
+# student1 = Students("Григорий", [4, 4, 3, 3, 5, 4])
+# student1[2] = 4
+# print(student1[2])  # 4
+
+
+# class Students:
+#     def __init__(self, name, marks):
+#         self.name = name
+#         self.marks = list(marks)
+#
+#     def __getitem__(self, item):  # [2] передается в item
+#         if 0 <= item < len(self.marks):
+#             return self.marks[item]
+#         else:
+#             raise IndexError("Такого индекса в списке нет")
+#
+#     def __setitem__(self, key, value):  # можно расширить функционал, например, если индекс будет больше длины списка,
+#         # заполнить его элементами по умолчанию
+#         if not isinstance(key, int) or key < 0:
+#             raise TypeError("индекс должен быть целым и не отрицательным числом")
+#
+#         # сверка на длины списка и индекса
+#         if key >= len(self.marks):
+#             off = key + 1 - len(self.marks) # разница между длиной списка и задаваемым индексом
+#             self.marks.extend([None] * off) # расширяем / заполняем список значением None до необходимого индекса
+#
+#         self.marks[key] = value # затем присваиваем новое значение по индексу
+#
+#
+# student1 = Students("Григорий", [4, 4, 3, 3, 5, 4])
+# student1[2] = 4
+# print(student1.marks)  # 4
+# student1[7] = 5
+# print(student1.marks)  # [4, 4, 4, 3, 5, 4, None, 5]
+
+# # если необходимо удалить элемент, нужно переопределить магический метод __delitem__
+# class Students:
+#     def __init__(self, name, marks):
+#         self.name = name
+#         self.marks = list(marks)
+#
+#     def __getitem__(self, item):  # [2] передается в item
+#         if 0 <= item < len(self.marks):
+#             return self.marks[item]
+#         else:
+#             raise IndexError("Такого индекса в списке нет")
+#
+#     def __setitem__(self, key, value):  # можно расширить функционал, например, если индекс будет больше длины списка,
+#         # заполнить его элементами по умолчанию
+#         if not isinstance(key, int) or key < 0:
+#             raise TypeError("индекс должен быть целым и не отрицательным числом")
+#
+#         if key >= len(self.marks):
+#             off = key + 1 - len(self.marks)
+#             self.marks.extend([None] * off)
+#
+#         self.marks[key] = value
+#
+#     def __delitem__(self, key):
+#         if not isinstance(key, int):
+#             raise TypeError("индекс должен быть целым числом")
+#         del self.marks[key]
+#
+#
+# student1 = Students("Григорий", [4, 4, 3, 3, 5, 4])
+# del student1[6]  # удаление None
+# print(student1.marks) # [4, 4, 3, 3, 5, 4]
