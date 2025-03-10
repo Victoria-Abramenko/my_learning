@@ -2346,3 +2346,135 @@
 # student1 = Students("Григорий", [4, 4, 3, 3, 5, 4])
 # del student1[6]  # удаление None
 # print(student1.marks) # [4, 4, 3, 3, 5, 4]
+
+# # __________________  магические методы __iter__ и __next__  __________________
+# # __iter__(self) - получение итератора для перебора объекта
+# # __next__(self) - переход к следующему значению и его считыванию
+# # it1 = iter(lst) - функционал для перебора элементов, next(it1) переходит к следующему значению
+# # функция range(start, atop, step) - итератор (арифметическая последовательность)
+# # как это работает (механизм перебора любого оператора) на примере функции range
+# a = iter(range(5))
+# print(next(a))  # 0
+# print(next(a))  # 1
+# print(next(a))  # 2
+# print(next(a))  # 3
+# print(next(a))  # 4
+
+# class Float_range:
+#     def __init__(self, start = 0.0, stop = 0.0, step = 1.0):
+#         self.start = start
+#         self.stop = stop
+#         self.step = step
+#         self.value = self.start - self.step # определим начальное значение value
+#         # (чтобы первое значение self.value + self.step было равно self.start)
+#
+#     def __next__(self):
+#         if self.value + self.step < self.stop:  # проверка, если текущее значение + шаг меньше значения стоп, то
+#             self.value += self.step  # прибавляем шаг и сохраняем это значение
+#             return self.value  # возвращаем это новое значение
+#         else:
+#             raise StopIteration # в ином случае генерируем исключение стоп итерация
+#
+# fr1 = Float_range(0, 2, 0.5)
+# # print(fr1.__next__()) # 0.0
+# # print(fr1.__next__()) # 0.5
+# # print(fr1.__next__()) # 1.0
+# # print(fr1.__next__()) # 1.5
+
+# # благодаря магическому методу __next__ можно использовать функцию next
+# print(next(fr1)) # 0.0
+# print(next(fr1)) # 0.5
+# print(next(fr1)) # 1.0
+# print(next(fr1)) # 1.5
+
+# # fr1 получается итерируемый объект, но если его перебрать через цикл for, возникнет ошибка , так как не применяется
+# # функция iter к fr1
+# class Float_range:
+#     def __init__(self, start = 0.0, stop = 0.0, step = 1.0):
+#         self.start = start
+#         self.stop = stop
+#         self.step = step
+#         self.value = self.start - self.step
+#
+#     def __next__(self):
+#         if self.value + self.step < self.stop:
+#             self.value += self.step
+#             return self.value
+#         else:
+#             raise StopIteration
+#
+# fr1 = Float_range(0, 2, 0.5)
+# for i in fr1:
+#     print(i) # TypeError: 'Float_range' object is not iterable
+
+# # чтобы это исправить необходимо прописать магический метод __iter__
+# class Float_range:
+#     def __init__(self, start = 0.0, stop = 0.0, step = 1.0):
+#         self.start = start
+#         self.stop = stop
+#         self.step = step
+#
+#
+#     def __iter__(self):
+#         self.value = self.start - self.step # перенесем в этот метод определение value
+#         return self # вернуть сам объект, так как он и является итератором
+#
+#     def __next__(self):
+#         if self.value + self.step < self.stop:
+#             self.value += self.step
+#             return self.value
+#         else:
+#             raise StopIteration
+#
+# fr1 = Float_range(0, 2, 0.5)
+# for i in fr1:
+#     print(i)
+# # 0.0
+# # 0.5
+# # 1.0
+# # 1.5
+#
+# # добавим класс Fr2d для формирования таблицы значений
+# class Float_range:
+#     def __init__(self, start = 0.0, stop = 0.0, step = 1.0):
+#         self.start = start
+#         self.stop = stop
+#         self.step = step
+#
+#
+#     def __iter__(self):
+#         self.value = self.start - self.step # перенесем в этот метод определение value
+#         return self # вернуть сам объект, так как он и является итератором
+#
+#     def __next__(self):
+#         if self.value + self.step < self.stop:
+#             self.value += self.step
+#             return self.value
+#         else:
+#             raise StopIteration
+#
+# class Fr2d:
+#     def __init__(self, start = 0.0, stop = 0.0, step = 1.0, rows = 5):
+#         self.rows = rows
+#         self.fr = Float_range(start, stop, step) # этот экземпляр класса будет формировать числа для каждой строки
+#
+#     # для того, чтобы обходить элементы, делаем из класса итератор
+#     def __iter__(self):
+#         self.value = 0
+#         return self
+#
+#     def __next__(self):
+#         if self.value < self.rows: # еще не все строки пройдены
+#             self.value += 1 # увеличим значение на 1
+#             return iter(self.fr)  # возвращаем итератор этого объекта
+#         else:
+#             raise StopIteration
+#
+# fr = Fr2d(0, 2, 0.5, 3)
+# for row in fr:  # здесь в качестве значения получаем итератор iter(self.fr)
+#     for column in row:  # здесь перебираем итератор Float_range(start, stop, step)  и получаем конкретные значения
+#         print(column, end=" ")  # для отображения значений через пробел
+#     print()  # для переноса на новую строку
+# # 0.0 0.5 1.0 1.5
+# # 0.0 0.5 1.0 1.5
+# # 0.0 0.5 1.0 1.5
