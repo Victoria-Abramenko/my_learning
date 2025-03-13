@@ -2646,3 +2646,214 @@
 # n = New_list([1, 2, 3])
 # print(n)  # 1 2 3 теперь отображается так, а не как по умолчанию [1, 2, 3] стандартный вывод списка
 
+
+#________________  функция super()  ___________
+# # Когда дочерний элемент наследуется от базового класса, и в нем прописывается какой-либо метод(параметр) - это
+# # называется расширением базового класса
+# class Geom:
+#     name = "Geom"
+#
+#
+# class Line(Geom):
+#     def draw(self):  # расширение базового класса (extended)
+#         print("Рисование линии")
+#
+# # Когда дочерний элемент наследуется от базового класса, и в базовом классе тоже есть такой метод(параметр) - то это
+# # называется переопределением
+# class Geom:
+#     name = "Geom"
+#
+#     def draw(self):
+#         print("Рисование геометрии")
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")  # переопределение (overriding)
+
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self):
+#         print("Сработал инициализатор Geom")
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# l = Line()  # Сработал инициализатор Geom
+
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self):
+#         print("Сработал инициализатор Geom")
+#
+#
+# class Line(Geom):
+#     def __init__(self):
+#         print("Сработал инициализатор Line")
+#
+#     def draw(self):
+#         print("Рисование линии")
+#
+#
+# l = Line()  # Сработал инициализатор Line
+
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self):
+#         print("Сработал инициализатор Geom")
+#
+#
+# class Line(Geom):
+#
+#
+#     def __init__(self, x1,y1, x2, y2):
+#         self.x1 = x1
+#         self.y1 = y1
+#         self.x2 = x2
+#         self.y2 = y2
+#
+#     def draw(self):
+#         print("Рисование линии")
+#
+#
+# l = Line(0, 0, 10, 20)
+# print(l.__dict__)  # {'x1': 0, 'y1': 0, 'x2': 10, 'y2': 20}
+
+# но если мы будем создавать несколько дочерних классов, будет дублирование кода
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self):
+#         print("Сработал инициализатор Geom")
+#
+#
+# class Line(Geom):
+#     def __init__(self, x1,y1, x2, y2):
+#         self.x1 = x1
+#         self.y1 = y1
+#         self.x2 = x2
+#         self.y2 = y2
+#
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1,y1, x2, y2, fill=None):
+#         self.x1 = x1
+#         self.y1 = y1
+#         self.x2 = x2
+#         self.y2 = y2
+#         self.fill = fill
+#
+#     def draw(self):
+#         print("Рисование прямоугольника")
+#
+#
+# l = Line(0, 0, 10, 20)
+
+# # чтобы избежать дублирование кода, выносим сточки в базовый класс
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.x1 = x1
+#         self.y1 = y1
+#         self.x2 = x2
+#         self.y2 = y2
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         print("сработал Rect init")
+#         self.fill = fill
+#
+#     def draw(self):
+#         print("Рисование прямоугольника")
+#
+#
+# l = Line(0, 0, 10, 20)  # Сработал инициализатор для <class '__main__.Line'>
+# r = Rect(1, 2, 3, 4) # сработал Rect init
+#
+# # Но чтобы создать локальный свойства координат в дочернем классе Rect, необходимо также вызвать init базового класса,
+# # но при нахождении такого метода в дочернем классе, дальнейший поиск прекращается, поэтому он не вызывается,
+# # чтобы это исправить.
+
+# # 1 способ - прописать(вызвать его напрямую)
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.x1 = x1
+#         self.y1 = y1
+#         self.x2 = x2
+#         self.y2 = y2
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         Geom.__init__(self, x1, y1, x2, y2)  # вызывает инициализатор базового класса
+#         print("сработал Rect init")
+#         self.fill = fill
+#
+#     def draw(self):
+#         print("Рисование прямоугольника")
+#
+#
+# l = Line(0, 0, 10, 20)
+# r = Rect(1, 2, 3, 4)
+# # Сработал инициализатор для <class '__main__.Line'>
+# # Сработал инициализатор для <class '__main__.Rect'>  # а значит он был запущен
+# # сработал Rect init
+
+# # но это не лучшая практика, так как потенциально могут быть проблемы, при переименовании классов
+# # Лучше использовать специальную функцию (возвращает ссылку на объект посредник)
+# # 2 способ
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.x1 = x1
+#         self.y1 = y1
+#         self.x2 = x2
+#         self.y2 = y2
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         super().__init__(x1, y1, x2, y2)  # возвращает ссылку на объект-посредник, через который вызываются методы
+#         # базового класса, поэтому здесь self не нужен
+#         print("сработал Rect init")
+#         self.fill = fill
+#
+#     def draw(self):
+#         print("Рисование прямоугольника")
+#
+#
+# l = Line(0, 0, 10, 20)
+# r = Rect(1, 2, 3, 4)
+# # Сработал инициализатор для <class '__main__.Line'>
+# # Сработал инициализатор для <class '__main__.Rect'>  # а значит он был запущен
+# # сработал Rect init
+
+# инициализатор класса необходимо прописывать в первую очередь, иначе он может поменять локально свойств, так как стоит после
+# вызов методов класса через функцию super - называется делигированием
