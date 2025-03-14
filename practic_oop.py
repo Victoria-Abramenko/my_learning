@@ -2856,4 +2856,187 @@
 # # сработал Rect init
 
 # инициализатор класса необходимо прописывать в первую очередь, иначе он может поменять локально свойств, так как стоит после
-# вызов методов класса через функцию super - называется делигированием
+# вызов методов класса через функцию super - называется делегированием
+
+# ________________________   Режимы доступа ______________________________
+# attribute режим доступа public
+# _attribute режим доступа protected
+# __attribute режим доступа private
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.__x1 = x1
+#         self.__y1 = y1
+#         self.__x2 = x2
+#         self.__y2 = y2
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         super().__init__(x1, y1, x2, y2)
+#         self.__fill = fill
+#
+#
+# r = Rect(0, 0, 10, 10)
+# print(r.__dict__)
+# Сработал инициализатор для <class '__main__.Rect'>
+# {'_Geom__x1': 0, '_Geom__y1': 0, '_Geom__x2': 10, '_Geom__y2': 10, '_Rect__fill': None}
+# в том классе, в котором прописан приватный атрибут, тот префикс и прописывается _Geom__y1 и _Rect__fill
+#
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.__x1 = x1
+#         self.__y1 = y1
+#         self.__x2 = x2
+#         self.__y2 = y2
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         super().__init__(x1, y1, x2, y2)
+#         self.__fill = fill
+#
+#     def get_coords(self): # если поместить этот метод в класс Rect, то его вызов выдаст ошибку
+#         return (self.__x1, self.__y1)
+#
+# r = Rect(0, 0, 10, 10)
+# r.get_coords() # выдаст ошибку, так как атрибуты приватные
+# print(r.__dict__)
+# # AttributeError: 'Rect' object has no attribute '_Rect__x1'. Did you mean: '_Geom__x1'?
+
+# то есть эти атрибуты доступны только внутри класса, даже в дочерних классах они не доступны
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.__x1 = x1
+#         self.__y1 = y1
+#         self.__x2 = x2
+#         self.__y2 = y2
+#
+#     def get_coords(self): # если поместить этот метод в класс Geom, все отработает без ошибок
+#         return (self.__x1, self.__y1)
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         super().__init__(x1, y1, x2, y2)
+#         self.__fill = fill
+#
+#
+# r = Rect(0, 0, 10, 10)
+# r.get_coords()
+# print(r.__dict__)
+
+# # чтобы атрибуты были доступны и в дочерних классах, необходимо использовать режим protected
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self._x1 = x1
+#         self._y1 = y1
+#         self._x2 = x2
+#         self._y2 = y2
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         super().__init__(x1, y1, x2, y2)
+#         self._fill = fill
+#
+#     def get_coords(self):
+#         return (self._x1, self._y1)
+#
+# r = Rect(0, 0, 10, 10)
+# r.get_coords() # отработает без ошибок, так как атрибуты в режиме protected
+# print(r.__dict__)
+
+# # приватными можно сделать и методы
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self.__verify_coords(x1) # если вызвать этот метод в классе, никаких ошибок не будет
+#         self._x1 = x1
+#         self._y1 = y1
+#         self._x2 = x2
+#         self._y2 = y2
+#
+#     def __verify_coords(self, coord):  # Создаем приватный метод
+#         return 0 <= coord <= 100
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         super().__init__(x1, y1, x2, y2)
+#         self._fill = fill
+#
+#     def get_coords(self):
+#         return (self._x1, self._y1)
+#
+# r = Rect(0, 0, 10, 10)
+# r.get_coords() # отработает без ошибок, так как метод вызван в самом классе
+# print(r.__dict__)
+
+# # но если попытаться вызвать метод в дочернем классе, выведется ошибка
+# class Geom:
+#     name = "Geom"
+#
+#     def __init__(self, x1, y1, x2, y2):
+#         print(f"Сработал инициализатор для {self.__class__}")
+#         self._x1 = x1
+#         self._y1 = y1
+#         self._x2 = x2
+#         self._y2 = y2
+#
+#     def __verify_coords(self, coord):  # Создаем приватный метод
+#         return 0 <= coord <= 100
+#
+#
+# class Line(Geom):
+#     def draw(self):
+#         print("Рисование линии")
+#
+# class Rect(Geom):
+#     def __init__(self, x1, y1, x2, y2, fill=None):
+#         self.__verify_coords(x1)  # если вызвать этот метод в дочернем классе, произойдет ошибка
+#         super().__init__(x1, y1, x2, y2)
+#         self._fill = fill
+#
+#     def get_coords(self):
+#         return (self._x1, self._y1)
+#
+#
+#
+# r = Rect(0, 0, 10, 10)
+# r.get_coords()
+# print(r.__dict__)
+# # AttributeError: 'Rect' object has no attribute '_Rect__verify_coords'. Did you mean: '_Geom__verify_coords'?
