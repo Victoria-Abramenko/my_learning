@@ -3040,3 +3040,281 @@
 # r.get_coords()
 # print(r.__dict__)
 # # AttributeError: 'Rect' object has no attribute '_Rect__verify_coords'. Did you mean: '_Geom__verify_coords'?
+
+# ______________________  Полиморфизм  _____________________
+# # Полиморфизм - возможность работать с разными объектами единым образом (через единый интерфейс)
+# # На примере двух классов, прямоугольник и квадрат, в которых есть геттер на получение периметров этих фигур
+# class Rectangle:
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_rect_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_sq_per(self):
+#         return 4 * self.a
+#
+#
+# r1 = Rectangle(1, 2)
+# r2 = Rectangle(3, 4)
+# s1 = Square(10)
+# s2 = Square(20)
+# print(r1.get_rect_per(), r2.get_rect_per())  # 6 14
+# print(s1.get_sq_per(), s2.get_sq_per())  # 40 80
+
+# # Если для удобства поместить объекты в список, а затем пройтись циклом по ним, чтобы применить к ним геттер, то не выйдет,
+# # так как каждой фигуры свой метод (с разными названиями)
+# class Rectangle:
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_rect_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_sq_per(self):
+#         return 4 * self.a
+#
+#
+# r1 = Rectangle(1, 2)
+# r2 = Rectangle(3, 4)
+# s1 = Square(10)
+# s2 = Square(20)
+#
+# geom = [r1, r2, s1, s2]
+# for i in geom:
+#     # print(i.get_sq_per()) но для квадрата один метод
+#     # print(i.get_rect_per()) для прямоугольника другой
+#     print(i.get_sq_per()) # поэтому возникнет ошибка
+# # AttributeError: 'Rectangle' object has no attribute 'get_sq_per'. Did you mean: 'get_rect_per'?
+
+# # эту проблему можно решить 2 способами:
+# # 1 при помощи условного оператора (не лучший выбор)
+# class Rectangle:
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_rect_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_sq_per(self):
+#         return 4 * self.a
+#
+#
+# r1 = Rectangle(1, 2)
+# r2 = Rectangle(3, 4)
+# s1 = Square(10)
+# s2 = Square(20)
+#
+# geom = [r1, r2, s1, s2]
+# for i in geom:
+#     if isinstance(i, Rectangle): # Если прямоугольник, то этот метод
+#         print(i.get_rect_per())
+#     else: # Если квадрат, то этот метод
+#         print(i.get_sq_per()) # но если добавится еще объект(к примеру, треугольник, программа опять выдаст ошибку)
+# # 6
+# # 14
+# # 40
+# # 80
+
+# # используя принцип полиморфизма
+# class Rectangle:
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_per(self):
+#         return 4 * self.a
+#
+#
+# r1 = Rectangle(1, 2)
+# r2 = Rectangle(3, 4)
+# s1 = Square(10)
+# s2 = Square(20)
+#
+# geom = [r1, r2, s1, s2]
+# for i in geom:
+#     print(i.get_per()) # одинаковое название методов. Для каждого объекта вызовется свой метод
+# # 6
+# # 14
+# # 40
+# # 80
+
+# # список можно сформировать иначе(сразу создавать в нем экземпляры классов)
+# class Rectangle:
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_per(self):
+#         return 4 * self.a
+#
+# geom = [
+#     Rectangle(1, 2), Rectangle(3, 4),
+#     Square(10), Square(20)
+# ]
+#
+# for i in geom:
+#     print(i.get_per()) # одинаковое название методов. Для каждого объекта вызовется свой метод
+# # 6
+# # 14
+# # 40
+# # 80
+
+# # у такого способа реализации также есть недостаток, например если мы создадим еще один класс и забудем прописать в нем
+# # такой же метод, это приведет к ошибке
+# class Rectangle:
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_per(self):
+#         return 4 * self.a
+#
+# class Triangle:
+#     def __init__(self, a, b, c):
+#         self.a = a
+#         self.b = b
+#         self.c = c
+#
+#     # def get_per(self): # если не создать такой метод AttributeError: 'Triangle' object has no attribute 'get_per'
+#     #     return self.a + self.b + self.c
+#
+# geom = [
+#     Rectangle(1, 2), Rectangle(3, 4),
+#     Square(10), Square(20),
+#     Triangle(1, 2, 3), Triangle(4, 5, 6)
+# ]
+#
+# for i in geom:
+#     print(i.get_per())
+
+# # также есть несколько решений
+# # 1 - создать базовый класс и прописать в нем этот метод, а остальные классы унаследовать от него (не лучшая реализация)
+# class Figure:
+#     def get_per(self):
+#         return -1
+#
+#
+# class Rectangle(Figure):
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square(Figure):
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_per(self):
+#         return 4 * self.a
+#
+# class Triangle(Figure):
+#     def __init__(self, a, b, c):
+#         self.a = a
+#         self.b = b
+#         self.c = c
+#
+# geom = [
+#     Rectangle(1, 2), Rectangle(3, 4),
+#     Square(10), Square(20),
+#     Triangle(1, 2, 3), Triangle(4, 5, 6)
+# ]
+#
+# for i in geom:
+#     print(i.get_per())
+# # 6
+# # 14
+# # 40
+# # 80
+# # -1
+# # -1 ошибки не возникнет, вернет результат указанный по умолчанию
+#
+# # лучше сделать так, чтобы у дочерних классов, была обязательная реализация данного метода
+# # добавить обработку исключения, чтобы был переопределен метод
+# class Figure:
+#     def get_per(self): # абстракт (нет своей реализации, его нужно переопределять в дочерних классах)
+#         raise NotImplementedError("В дочернем классе должен быть переопределен метод get_per")
+#
+#
+# class Rectangle(Figure):
+#     def __init__(self, w, h):
+#         self.w = w
+#         self.h = h
+#
+#     def get_per(self):
+#         return 2 * (self.w + self.h)
+#
+#
+# class Square(Figure):
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def get_per(self):
+#         return 4 * self.a
+#
+# class Triangle(Figure):
+#     def __init__(self, a, b, c):
+#         self.a = a
+#         self.b = b
+#         self.c = c
+#
+# geom = [
+#     Rectangle(1, 2), Rectangle(3, 4),
+#     Square(10), Square(20),
+#     Triangle(1, 2, 3), Triangle(4, 5, 6)
+# ]
+#
+# for i in geom:
+#     print(i.get_per())
+#
+# # NotImplementedError: В дочернем классе должен быть переопределен метод get_per тогда появится исключение
+#
+# # методы, которые обязательно нужно переопределять, и у них нет своей реализации - называются абстрактами
+
+# _______________    _________________
+
