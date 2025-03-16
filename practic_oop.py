@@ -3316,5 +3316,187 @@
 #
 # # методы, которые обязательно нужно переопределять, и у них нет своей реализации - называются абстрактами
 
-# _______________    _________________
+# _______________  Множественное наследование  _________________
+# один дочерний класс может наследоваться от нескольких базовых
+# Оно не так часто используется, но все же используется, например, применение миксинов (миксины - mixins - примеси)
+# в python реализуется через множественное наследование
+# на примере, интернет магазина, в котором несколько различных групп товаров(свои классы, для каждой категории),
+# и общий класс с полями информации по товару
+# class Info:  # класс, который содержит информацию о товаре
+#     def __init__(self, name, weight, price):
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#
+#     def print_info(self):
+#         print(f"Товар: {self.name}, вес: {self.weight}, цена: {self.price}")
+#
+#
+# class Notebook(Info):  # класс для ноутбуков
+#     pass
+#
+# note1 = Notebook("Toshiba", 1.8, 50000)
+# note1.print_info()
+# # Товар: Toshiba, вес: 1.8, цена: 50000
+
+# # чтобы добавить лог (лог - например, запись о событиях в программе), логику не следует добавлять в базовый класс или по
+# # иерархии создавать класс еще выше, это плохая практика. Следует создать класс миксин, который ни от какого класса не наследуется
+#
+# class Info:  # класс, который содержит информацию о товаре
+#     def __init__(self, name, weight, price):
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#
+#     def print_info(self):
+#         print(f"Товар: {self.name}, вес: {self.weight}, цена: {self.price}")
+#
+#
+# class Mixinlog:  # класс для логирования
+#     id = 0
+#
+#     def __init__(self):
+#         print("сработал инициализатор Mixinlog")
+#         Mixinlog.id += 1
+#         self.id = Mixinlog.id
+#
+#     def save_sell_log(self):
+#         print(f"{self.id}: товар был продан")
+#
+#
+# class Notebook(Info, Mixinlog):  # класс для ноутбуков + добавляем миксин с id товара
+#     pass
+#
+# note1 = Notebook("Toshiba", 1.8, 50000)
+# note1.print_info()
+# note1.save_sell_log()
+# # Товар: Toshiba, вес: 1.8, цена: 50000
+# # 0: товар был продан
+
+# # но __init__ класса Mixinlog не отработал, так как сначала поиск __init__ начинается в дочернем классе, если его там нет,
+# # то поиск ведется уже в базовом классе (info), там он срабатывает, и поиск дальше не ведется, чтобы отработал второй
+# # __init__ (класса Mixinlog) необходимо в базовом классе, прописать вызов __init__ через функцию super()
+#
+# class Info:  # класс, который содержит информацию о товаре
+#     def __init__(self, name, weight, price):
+#         super().__init__()
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#
+#     def print_info(self):
+#         print(f"Товар: {self.name}, вес: {self.weight}, цена: {self.price}")
+#
+#
+# class Mixinlog:  # класс для логирования
+#     id = 0
+#
+#     def __init__(self):
+#         print("сработал инициализатор Mixinlog")
+#         Mixinlog.id += 1
+#         self.id = Mixinlog.id
+#
+#     def save_sell_log(self):
+#         print(f"{self.id}: товар был продан")
+#
+#
+# class Notebook(Info, Mixinlog):  # класс для ноутбуков + добавляем миксин с id товара
+#     pass
+#
+# note1 = Notebook("Toshiba", 1.8, 50000)
+# note1.print_info()
+# note1.save_sell_log()
+# # сработал инициализатор Mixinlog
+# # Товар: Toshiba, вес: 1.8, цена: 50000
+# # 1: товар был продан
+#
+# # в множественном наследовании есть определенный алгоритм обхода базовых классов MRO(Method Resolution Order)
+# # Сначала обращается к дочернему классу (Notebook), ищет там необходимый метод, затем к первому базовому классу
+# # (записан первым - Info), затем ко второму базовому (записан вторым - Mixinlog), и только после этого к классу object
+# # именно поэтому super().__init__() срабатывает для класса Mixinlog, а не для общего класса object
+#
+# # список классов, по которому будем обходить можно посмотреть при помощи специального метода __mro__ (для класса, а не его экземпляра)
+# print(Notebook.__mro__)
+# # (<class '__main__.Notebook'>, <class '__main__.Info'>, <class '__main__.Mixinlog'>, <class 'object'>) они как раз
+# # указаны в том порядке, в котором по ним и будет происходить прохождение
+
+# именно поэтому, когда мы передаем параметры "Toshiba", 1.8, 50000 они записываются в переменные name, weight, price,
+# так как __init__ класса Info срабатывает первым
+# порядок важен, первым записывается как правило тот класс, в котором прописываются какие-то дополнительные параметры,
+# а во вспомогательных классах, только 1 параметр self, иначе возникнут сложности в работе программы
+
+# # если в классах одинаковое имя метода, то первым будет также вызываться тот, который прописан первым
+# class Info:
+#     def __init__(self, name, weight, price):
+#         super().__init__()
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#
+#     def print_info(self):
+#         print(f"Товар: {self.name}, вес: {self.weight}, цена: {self.price}")
+#
+#
+# class Mixinlog:  # класс для логирования
+#     id = 0
+#
+#     def __init__(self):
+#         print("сработал инициализатор Mixinlog")
+#         Mixinlog.id += 1
+#         self.id = Mixinlog.id
+#
+#     def save_sell_log(self):
+#         print(f"{self.id}: товар был продан")
+#
+#     def print_info(self):
+#         print("Вызов метода print_info из класса Mixinlog")
+#
+#
+# class Notebook(Info, Mixinlog):
+#     pass
+#
+# note1 = Notebook("Toshiba", 1.8, 50000)
+# note1.print_info() # отработает метод print_info() из класса Info, так как он указан первым (Info, Mixinlog)
+# # Товар: Toshiba, вес: 1.8, цена: 50000
+#
+# # чтобы вызвать метод другого класса, есть несколько способов
+# # 1 способ - прописать сам класс, обратиться к его методу, а в качестве первого аргумента передать ссылку на экземпляр класса
+# Mixinlog.print_info(note1) # Вызов метода print_info из класса Mixinlog
+# # используется для единичного случая
+
+# # 2 способ - переопределить этот метод в дочернем классе - используется, если необходимо множество раз вызывать именно
+# # этот метод
+# class Info:
+#     def __init__(self, name, weight, price):
+#         super().__init__()
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#
+#     def print_info(self):
+#         print(f"Товар: {self.name}, вес: {self.weight}, цена: {self.price}")
+#
+#
+# class Mixinlog:  # класс для логирования
+#     id = 0
+#
+#     def __init__(self):
+#         print("сработал инициализатор Mixinlog")
+#         Mixinlog.id += 1
+#         self.id = Mixinlog.id
+#
+#     def save_sell_log(self):
+#         print(f"{self.id}: товар был продан")
+#
+#     def print_info(self):
+#         print("Вызов метода print_info из класса Mixinlog")
+#
+#
+# class Notebook(Info, Mixinlog):
+#     def print_info(self):  # так как в первую очередь метод срабатывает в дочернем классе
+#         Mixinlog.print_info(self)
+#
+# note1 = Notebook("Toshiba", 1.8, 50000)
+# note1.print_info() # Вызов метода print_info из класса Mixinlog
+
 
