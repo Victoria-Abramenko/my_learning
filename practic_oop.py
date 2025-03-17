@@ -3500,3 +3500,105 @@
 # note1.print_info() # Вызов метода print_info из класса Mixinlog
 
 
+# # ______________  коллекция __slots__  ______________
+# class Point:
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+# # в таком виде можно свободно оперировать этими данными
+# pt = Point(1, 2)
+# print(pt.__dict__)  # {'x': 1, 'y': 2}
+# print(pt.x)  # 1
+# pt.y = 10
+# # и даже задавать новые свойства
+# pt.z = 3
+# print(pt.__dict__)  # {'x': 1, 'y': 10, 'z': 3}
+
+# # для того, чтобы ограничить работу с определенными данными, используются коллекция __slots__
+# class Point:
+#     __slots__ = ("x", "y") # указываем какие локальные переменные разрешены
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#
+# pt = Point(1, 2)
+# # Мы также можем просмотреть значение и изменить его
+# print(pt.x)  # 1
+# pt.y = 10
+# # # но задавать новые свойства не даст - выскочит ошибка
+# # pt.z = 3
+# # # AttributeError: 'Point' object has no attribute 'z' and no __dict__ for setting new attributes
+#
+# # # поскольку мы добавили в класс коллекцию __slots__, коллекция __dict__ не формируется, так что ее вызов также приведет к ошибке
+# # print(pt.__dict__)
+# # # AttributeError: 'Point' object has no attribute '__dict__'. Did you mean: '__dir__'?
+
+# при этом в самом классе можно задавать любые атрибуты, ограничения лишь на локальные свойства
+# class Point:
+#     __slots__ = ("x", "y") # указываем какие локальные переменные разрешены
+#     max_coords = 5
+#
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+# pt = Point(1, 2)
+# print(pt.max_coords)  # 5
+
+# __slots__ также уменьшает объем занимаемой классом. можно провереть при помощи метода __sizeof__ сколько занимает
+# пространство имен экземпляра класса и сама коллекция __dict__
+# class Point:
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+# pt = Point(1, 2)
+# print(pt.__sizeof__() + pt.__dict__.__sizeof__()) # 296
+
+# class Point:
+#     __slots__ = ("x", "y")
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+# pt = Point(1, 2)
+# print(pt.__sizeof__())  # 32
+
+# # Также ускоряет работу с этими переменными
+# import timeit # для замера скорости работы
+# class Point1:
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def calc(self):
+#         self.x += 1
+#         del self.y
+#         self.y = 10
+#
+#
+# class Point2:
+#     __slots__ = ("x", "y")
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#     def calc(self):
+#         self.x += 1
+#         del self.y
+#         self.y = 10
+#
+#
+# pt1 = Point1(1, 2)
+# pt2 = Point2(1, 2)
+# t1 = timeit.timeit(pt1.calc)
+# t2 = timeit.timeit(pt2.calc)
+# print(t1, t2, sep=" | ")
+# # 0.29410385899973335 | 0.2597696769998947 # из-за того, что у меня комп томоз разница небольшая
