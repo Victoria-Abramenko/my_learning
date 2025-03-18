@@ -3602,3 +3602,103 @@
 # t2 = timeit.timeit(pt2.calc)
 # print(t1, t2, sep=" | ")
 # # 0.29410385899973335 | 0.2597696769998947 # из-за того, что у меня комп томоз разница небольшая
+
+# # _____________________  как работает __slots__ с property  ______________________________
+# class Point:
+#     __slots__ = ("x", "y", "__length")
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#         self.__length = (x * x + y * y) ** 0.5
+#
+# pt = Point(1, 2)
+# print(pt.length)  # 2.23606797749979
+        
+# # но если в классе передать свойство с таким же именем
+# class Point:
+#     __slots__ = ("x", "y", "__length")
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#         self.__length = (x * x + y * y) ** 0.5
+#     @property # через декоратор property, в сеттере и гетере прописать свойство с таким же именем length
+#     def length(self):
+#         return self.__length
+#
+#     @length.setter
+#     def length(self, value):
+#         self.__length = value
+#
+#
+# pt = Point(1, 2)
+# print(pt.length)  # 2.23606797749979
+# pt.length = 10 # при помощи сеттера можно установить новое значение
+# print(pt.length)  # 10
+# # несмотря на то, что разрешено свойство в коллекции __length, методы length также отработают, так как length это атрибут
+# # класса, а не локальное свойство экземпляров класса
+# # коллекция __slots__ ограничивает только локальные свойства экземпляров класса, а на атрибуты самого класса не накладывает
+# # никаких ограничений
+#
+# # при наследовании коллекция __slots__ будет работать так
+# class Point:
+#     __slots__ = ("x", "y")
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#
+# class Point3d(Point):
+#     pass
+#
+#
+# pt3 = Point3d(10, 20)
+# pt3.z = 30
+# print(pt3.z) # 30 все отработало, то есть класс Point3d не наследует коллекцию __slots__
+# # причем есть даже коллекция __dict__
+# print(pt3.__dict__)  # {'z': 30} свойства x и y есть, но не попадают в коллекцию __dict__
+# print(pt3.x)  # 10
+
+# # если определить в классе __slots__ даже пустую, то классу будут доступны только свойства x и y
+# class Point:
+#     __slots__ = ("x", "y")
+#
+#     def __init__(self, x, y):
+#         self.x = x
+#         self.y = y
+#
+#
+# class Point3d(Point):
+#     __slots__ = ()
+#
+#
+# pt3 = Point3d(10, 20)
+# pt3.z = 30 # AttributeError: 'Point3d' object has no attribute 'z' and no __dict__ for setting new attributes
+# print(pt3.z)
+# # попытка добавить новое свойство приведет к ошибке, но свойства x и y наследуются от базового класса
+
+# # Если необходимо добавить свойства их нужно прописать в коллекции __slots__
+# class Point:
+#     __slots__ = ("x", "y")
+#
+#
+#
+# class Point3d(Point):
+#     __slots__ = "z", # запятая здесь обязательна, так как коллекции __slots__ кортеж
+#
+#     def __init__(self, x, y, z):
+#         self.x = x
+#         self.y = y
+#         self.z = z
+#
+# pt3 = Point3d(10, 20, 10)
+# pt3.z = 30
+# print(pt3.z)  # 30 все отработает без ошибок, так как мы разрешили свойство z
+
+
+
+
+
+
