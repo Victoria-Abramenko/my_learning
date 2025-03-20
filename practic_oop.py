@@ -3751,3 +3751,144 @@
 # print("Программа продолжила работу, так как исключение обработано")
 # # Некорректные данные
 # # Программа продолжила работу, так как исключение обработано
+
+# ________________  блоки finally и else  ______________
+#
+# try:
+#     n, m = map(int, input().split())  # a b
+#     res = n / m
+#     print(res)
+# except ZeroDivisionError as z:  # также исключения можно представить в виде переменной, и затем вывести ее
+#     print(z)  # division by zero (если передали 1 0)
+# except ValueError as z:
+#     print(z) # invalid literal for int() with base 10: 'a' (если передали a b)
+# # выведется стандартное сообщение класса исключения
+
+# # else выполняет код при штатном завершении блока try(т.е., когда программа отработает без ошибок)
+# try:
+#     n, m = map(int, input().split())  # 1 2
+#     res = n / m
+#     print(res)
+# except ZeroDivisionError as z:
+#     print(z)
+# except ValueError as z:
+#     print(z)
+# else:
+#     print("Программа отработала без ошибок")
+# # 0.5
+# # Программа отработала без ошибок
+
+# # если ошибка произойдет, то код в блоке else не будет выполняться
+# try:
+#     n, m = map(int, input().split())  # a b
+#     res = n / m
+#     print(res)
+# except ZeroDivisionError as z:
+#     print(z)
+# except ValueError as z:
+#     print(z)
+# else:
+#     print("Программа отработала без ошибок")
+# # invalid literal for int() with base 10: 'a'
+
+# # блок finally выполняется всегда, не зависимо от исключений
+# try:
+#     n, m = map(int, input().split())  # a b
+#     res = n / m
+#     print(res)
+# except ZeroDivisionError as z:
+#     print(z)
+# except ValueError as z:
+#     print(z)
+# finally:
+#     print("Это сообщение выведется в любом случае")
+# # если вводятся 1 2
+# # 0.5
+# # Это сообщение выведется в любом случае
+#
+# # если вводятся a b
+# # invalid literal for int() with base 10: 'a'
+# # Это сообщение выведется в любом случае
+
+# # блок используется, например при чтении и записи в файл, чтобы закрыть его, не зависимо от того была ли ошибка или нет
+# try:
+#     f = open("my_file.txt")
+#     f.write("hello") # файл был открыт только для чтения, поэтому это приведет к ошибке
+# except FileNotFoundError as er:
+#     print(er)
+# except:
+#     print("Другая ошибка")
+# finally:
+#     if f:  # если файл открыт
+#         f.close()
+#         print("Файл был закрыт")
+
+# # либо можно прописать менеджер контекста with он автоматически закрывает файл
+# try:
+#     with open("my_file.txt") as f:
+#         f.write("hello") # файл был открыт только для чтения, поэтому это приведет к ошибке
+# except FileNotFoundError as er:
+#     print(er)
+# except:
+#     print("Другая ошибка")
+
+# # есть особенность работы finally в функциях, он работает до операции return
+# def get_values():
+#     try:
+#         x, y = map(int, input().split())
+#         return x, y
+#     except ValueError as er:
+#         print(er)
+#         return 0, 0
+#     finally:
+#         print("блок finally выполняется до return")
+#
+# n, m = get_values()
+# print(n, m)
+#
+# # # если ввести значения 1 2
+# # блок finally выполняется до return
+# # 1 2
+#
+# # если ввести значения a b
+# # invalid literal for int() with base 10: 'a'
+# # блок finally выполняется до return
+# # 0 0
+#
+# # т.е. отрабатывает блок (try или except), затем блок finally и только после оператор return
+#
+# # также можно прописывать вложенные блоки try except
+# try:
+#     x, y = map(int, input().split())
+#     try:
+#         div = x / y
+#         print(div)
+#     except ZeroDivisionError as er:
+#         print(er)
+# except ValueError as er:
+#     print(er)
+# # # если ввести значения a b
+# # invalid literal for int() with base 10: 'a'
+#
+# # # если ввести значения 1 0
+# # division by zero
+#
+# # # если ввести значения 1 2
+# # 0.5
+
+# # этот вложенный блок также можно вынести в отдельную функцию
+# def div(a, b):
+#     try:
+#         return x / y
+#
+#     except ZeroDivisionError:
+#         return "Деление на ноль"
+#
+# res = 0
+# try:
+#     x, y = map(int, input().split())  # 1 2
+#     res = div(x,y)
+# except ValueError as er:
+#     print(er)
+# print(res) # 0.5
+
