@@ -3892,3 +3892,140 @@
 #     print(er)
 # print(res) # 0.5
 
+# # _____________  распространение исключений  _____________
+# # когда исключение возникает в функции, в консоли указывается строка, в которой написан код этой функции, и сторка, где
+# # эта функция вызывается
+# def func2():
+#     res = 1 / 0
+#
+# print("*")
+# print("**")
+# print("***")
+# func2()
+# print("***")
+# print("**")
+# print("*")
+# # Traceback (most recent call last):
+# # *
+# # **
+# # ***
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 3904, in <module>
+# #     func2()
+# #     ~~~~~^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 3899, in func2
+# #     res = 1 / 0
+# #           ~~^~~
+# # ZeroDivisionError: division by zero
+
+# # если в другой функции вызвать функцию с ошибкой, то эта строка также будет указан
+# def func2():
+#     res = 1 / 0
+#
+# def func1():
+#     func2()
+#
+# print("*")
+# print("**")
+# print("***")
+# func1()
+# print("***")
+# print("**")
+# print("*")
+# #*
+# # **
+# # ***
+# # Traceback (most recent call last):
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 3930, in <module>
+# #     func1()
+# #     ~~~~~^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 3925, in func1
+# #     func2()
+# #     ~~~~~^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 3922, in func2
+# #     res = 1 / 0
+# #           ~~^~~
+# # ZeroDivisionError: division by zero
+
+# Обработку исключения можно сделать на любом уровне стека func2 -> func1 -> main(на уровне всей программы)
+
+# # на уровне программы
+# def func2():
+#     res = 1 / 0
+#
+# def func1():
+#     func2()
+#
+# print("*")
+# print("**")
+# print("***")
+# try:
+#     func1()
+# except:
+#     print("Произошла ошибка при работе с функцией")
+# print("***")
+# print("**")
+# print("*")
+# # *
+# # **
+# # ***
+# # Произошла ошибка при работе с функцией
+# # ***
+# # **
+# # *
+
+# # на уровне первой функции - также все отработает
+# def func2():
+#     res = 1 / 0
+#
+# def func1():
+#     try:
+#         return func2()
+#     except:
+#         print("Произошла ошибка при работе с функцией")
+#
+# print("*")
+# print("**")
+# print("***")
+# func1()
+# print("***")
+# print("**")
+# print("*")
+# # *
+# # **
+# # ***
+# # Произошла ошибка при работе с функцией
+# # ***
+# # **
+# # *
+
+# # при этом, если обработать ошибку на более раннем стеке, она дальше обрабатываться не будет, так как уже обработана
+# def func2():
+#     try:
+#         return 1 / 0
+#     except:
+#         print("Ошибка в функции func2")
+#
+# def func1():
+#     try:
+#         return func2()
+#     except:
+#         print("Произошла ошибка при работе с функцией")
+#
+# print("*")
+# print("**")
+# print("***")
+# func1()
+# print("***")
+# print("**")
+# print("*")
+# # *
+# # **
+# # ***
+# # Ошибка в функции func2
+# # ***
+# # **
+# # *
+
+
+
+
