@@ -4026,6 +4026,220 @@
 # # **
 # # *
 
+# ______________  инструкция raise и пользовательские исключения  _____________
+# # При помощи raise можно сгенерировать исключение
+# print("*")
+# print("**")
+# print("***")
+# raise ZeroDivisionError # сработает исключение, хотя деления на ноль в программе нет
+# print("***")
+# print("**")
+# print("*")
+# # Traceback (most recent call last):
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4034, in <module>
+# #     raise ZeroDivisionError
+# # ZeroDivisionError
+# # *
+# # **
+# # ***
 
+# # можно указать свое сообщение ошибки
+# print("*")
+# print("**")
+# print("***")
+# raise ZeroDivisionError("Ошибка - на ноль делить нельзя")
+# print("***")
+# print("**")
+# print("*")
+# # *
+# # **
+# # ***
+# # Traceback (most recent call last):
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4050, in <module>
+# #     raise ZeroDivisionError("Ошибка - на ноль делить нельзя")
+# # ZeroDivisionError: Ошибка - на ноль делить нельзя
 
+# # можно присвоить переменной экземпляр класса исключения, а затем указать ее в операторе raise
+# print("*")
+# print("**")
+# print("***")
+# er = ZeroDivisionError("Ошибка - на ноль делить нельзя")
+# raise er
+# print("***")
+# print("**")
+# print("*")
+# # *
+# # **
+# # ***
+# # Traceback (most recent call last):
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4067, in <module>
+# #     raise er
+# # ZeroDivisionError: Ошибка - на ноль делить нельзя
 
+# # используется, когда стандартных классов исключений недостаточно
+# # Например, при ошибке при работе принтера
+# class PrintData:
+#     def print_data(self, data):
+#         self.send_data(data)
+#         print(f'Печать: {str(data)}')
+#
+#     def send_data(self, data):
+#         if not self.send_to_print(data):
+#             raise Exception("Принтер не отвечает")
+#
+#     def send_to_print(self, data):
+#         return False  # имитация ошибки подключения
+#
+# p = PrintData()
+# p.print_data("Какой-то документ на печать")
+# # Traceback (most recent call last):
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4094, in <module>
+# #     p.print_data("Какой-то документ на печать")
+# #     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4083, in print_data
+# #     self.send_data(data)
+# #     ~~~~~~~~~~~~~~^^^^^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4088, in send_data
+# #     raise Exception("Принтер не отвечает")
+# # Exception: Принтер не отвечает
+
+# # Это исключение можно также обработать, чтобы программа не прерывалась с ошибкой
+# class PrintData:
+#     def print_data(self, data):
+#         self.send_data(data)
+#         print(f'Печать: {str(data)}')
+#
+#     def send_data(self, data):
+#         if not self.send_to_print(data):
+#             raise Exception("Принтер не отвечает")
+#
+#     def send_to_print(self, data):
+#         return False
+#
+# p = PrintData()
+# try:
+#     p.print_data("Какой-то документ на печать")
+# except Exception:
+#     print("Ошибка подключения принтера")
+# # Ошибка подключения принтера
+
+# # а когда данные отправляются успешно, идет печать документа
+# class PrintData:
+#     def print_data(self, data):
+#         self.send_data(data)
+#         print(f'Печать: {str(data)}')
+#
+#     def send_data(self, data):
+#         if not self.send_to_print(data):
+#             raise Exception("Принтер не отвечает")
+#
+#     def send_to_print(self, data):
+#         return True  # ошибка подключения была исправлена
+#
+# p = PrintData()
+# try:
+#     p.print_data("Какой-то документ")
+# except Exception:
+#     print("Ошибка подключения принтера")
+# # Печать: Какой-то документ
+
+# # причем можно создать свой класс исключение - на основе базового класса Exception
+# class SendPrintError(Exception):  # так как наследуем от Exception базовый функционал уже заложен
+#     # pass # можно поставить pass
+#     """Для обработки ошибки подключения принтера"""  # принято оставлять комментарий для чего этот класс
+#
+# class PrintData:
+#     def print_data(self, data):
+#         self.send_data(data)
+#         print(f'Печать: {str(data)}')
+#
+#     def send_data(self, data):
+#         if not self.send_to_print(data):
+#             raise SendPrintError("Принтер не отвечает")
+#
+#     def send_to_print(self, data):
+#         return False
+#
+# p = PrintData()
+# try:
+#     p.print_data("Какой-то документ")
+# except SendPrintError:
+#     print("Ошибка подключения принтера")
+# # Ошибка подключения принтера
+
+# # в своем классе исключения можно прописать свой функционал
+# class SendPrintError(Exception):
+#     """Для обработки ошибки подключения принтера"""
+#
+#     def __init__(self, *args):
+#         self.message = args[0] if args else None # если есть аргументы, внести их в massage (сообщение исключения)
+#
+#     def __str__(self):  # переопределяем вывод сообщения
+#         return f"Ошибка : {self.message}"
+#
+#
+# class PrintData:
+#     def print_data(self, data):
+#         self.send_data(data)
+#         print(f'Печать: {str(data)}')
+#
+#     def send_data(self, data):
+#         if not self.send_to_print(data):
+#             raise SendPrintError("Принтер не отвечает")
+#
+#     def send_to_print(self, data):
+#         return False
+#
+# p = PrintData()
+# p.print_data("Какой-то документ")
+# # try:
+# #     p.print_data("Какой-то документ")
+# # except SendPrintError:
+# #     print("Ошибка подключения принтера")
+# # Traceback (most recent call last):
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4194, in <module>
+# #     p.print_data("Какой-то документ")
+# #     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4183, in print_data
+# #     self.send_data(data)
+# #     ~~~~~~~~~~~~~~^^^^^^
+# #   File "E:\my_project\python_lessons\practic_oop.py", line 4188, in send_data
+# #     raise SendPrintError("Принтер не отвечает")
+# # SendPrintError: Ошибка : Принтер не отвечает
+
+# # также можно прописать свою иерархию исключений
+# class PrintError(Exception):
+#
+#     def __str__(self):  # переопределяем вывод сообщения
+#         """Общий класс исключений работы принтера"""
+#
+#
+# class SendPrintError(PrintError):
+#     """Для обработки ошибки подключения принтера"""
+#
+#     def __init__(self, *args):
+#         self.message = args[0] if args else None # если есть аргументы, внести их в massage (сообщение исключения)
+#
+#     def __str__(self):  # переопределяем вывод сообщения
+#         return f"Ошибка при передаче данных: {self.message}"
+#
+#
+# class PrintData:
+#     def print_data(self, data):
+#         self.send_data(data)
+#         print(f'Печать: {str(data)}')
+#
+#     def send_data(self, data):
+#         if not self.send_to_print(data):
+#             raise SendPrintError("Принтер не отвечает")
+#
+#     def send_to_print(self, data):
+#         return False
+#
+# p = PrintData()
+# try:
+#     p.print_data("Какой-то документ")
+# except SendPrintError:
+#     print("ошибка: нет ответа от принтера")
+# except PrintError:
+#     print("Другая ошибка в работе принтера")
