@@ -13,6 +13,8 @@
 #    бурма
 #    Васька
 #    5
+from urllib.parse import uses_relative
+
 
 # ___________  Инкапсуляция  ______________
 # Напрямую к данным и методам класса из вне обращаться нельзя, только внутри класса - такой механизм называется
@@ -4379,4 +4381,111 @@
 # # Возникла ошибка
 # # [5, 7, 3] # вектор изменился, несмотря на возникшую ошибку
 
-# ___________
+# # ___________  Вложенные классы ____________
+# # это используется в Django на примере отображения данных в виде таблицы
+# # вложенный класс образует отдельное независимое пространство имен
+# class Model:
+#     title = "Какой-то заголовок"
+#     photo = "Фотография модели"
+#     ordering = "атрибут класса Model с таким же именем" # даже если создадим атрибут с таким же названием,
+#     # они независимы друг от друга
+#
+#     class Meta:
+#         ordering = ["id"]
+#
+# print(Model.ordering) # атрибут класса Model с таким же именем
+# print(Model.Meta.ordering)  # ['id']
+#
+# w = Model()  # у этого экземпляра класса не будет локальных переменных, так как мы не прописали инициализотор с атрибутами
+# print(w.__dict__)  # {}
+
+# # Но при создании экземпляра класса, экземпляр вложенного класса не создается, чтобы его создать, необходимо это
+# # прописать явно в инициализаторе
+# class Model:
+#     title = "Какой-то заголовок"
+#     photo = "Фотография модели"
+#     ordering = "атрибут класса Model с таким же именем"
+#
+#     def __init__(self, user, psw):
+#         self.user = user # добавили локальные свойства
+#         self.psw = psw
+#         self.meta = self.Meta() # создаем локальное свойство, которое будет ссылаться на экземпляр класса Meta
+#
+#     class Meta:
+#         ordering = ["id"]
+#
+#
+# w = Model('root', '1234')
+# print(w.__dict__)  # {'user': 'root', 'psw': '1234', 'meta': <__main__.Model.Meta object at 0x000001F2F5F92BA0>}
+# print(w.meta.__dict__)  # {} для класса Meta, так как локальных свойств в нем нет
+#
+# # чтобы убедиться в этом создадим локальые свойства для вложенного класса Meta
+# class Model:
+#     title = "Какой-то заголовок"
+#     photo = "Фотография модели"
+#     ordering = "атрибут класса Model с таким же именем"
+#
+#     def __init__(self, user, psw):
+#         self.user = user
+#         self.psw = psw
+#         self.meta = self.Meta(user + '@' + psw)
+#
+#     class Meta:
+#         ordering = ["id"]
+#
+#         def __init__(self, access):
+#             self.access = access
+#
+#
+# w = Model('root', '1234')
+# print(w.__dict__)  # {'user': 'root', 'psw': '1234', 'meta': <__main__.Model.Meta object at 0x000001F2F5F92BA0>}
+# print(w.meta.__dict__)  # {'access': 'root@1234'}
+
+# # а вот наоборот обращаться из вложенного класса к атрибутам внешнего класса Model нельзя
+# class Model:
+#     title = "Какой-то заголовок"
+#     photo = "Фотография модели"
+#     ordering = "атрибут класса Model с таким же именем"
+#
+#     def __init__(self, user, psw):
+#         self.user = user
+#         self.psw = psw
+#         self.meta = self.Meta(user + '@' + psw)
+#
+#     class Meta:
+#         ordering = ["id"]
+#         t = Model.title  # NameError: name 'Model' is not defined так как класс Model на момент исполнения кода еще не создан
+#
+#         def __init__(self, access):
+#             self.access = access
+#
+#
+# w = Model('root', '1234')
+# print(w.__dict__)
+# print(w.meta.__dict__)
+# # NameError: name 'Model' is not defined
+
+# # если код прописать в инициализаторе, то он уже будет работать, но на практике так не рекомендуется делать
+# class Model:
+#     title = "Какой-то заголовок"
+#     photo = "Фотография модели"
+#     ordering = "атрибут класса Model с таким же именем"
+#
+#     def __init__(self, user, psw):
+#         self.user = user
+#         self.psw = psw
+#         self.meta = self.Meta(user + '@' + psw)
+#
+#     class Meta:
+#         ordering = ["id"]
+#
+#         def __init__(self, access):
+#             self.access = access
+#             self.t = Model.title
+#
+#
+# w = Model('root', '1234')
+# print(w.__dict__)
+# print(w.meta.__dict__)
+# # {'user': 'root', 'psw': '1234', 'meta': <__main__.Model.Meta object at 0x000001EBB67A2BA0>}
+# # {'access': 'root@1234', 't': 'Какой-то заголовок'}
