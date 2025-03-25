@@ -111,10 +111,31 @@
 #
 # done()  # turtle.done() — функция модуля turtle в Python, которая приостанавливает выполнение программы до закрытия
 # # графического окна.
-    
 
 
-
+# # _____________  практика 6  _____________
+# from turtle import *
+# title('Victoria')
+# bgcolor('#511A29')
+# pensize(5)
+# pencolor('#D49D85')
+# lst_name = ["Vika"] * 40
+# angle = 360 / 40
+# penup()
+# sety(-1)
+# for _ in range(41):
+#     left(angle)
+#     forward(260)
+#     if lst_name:
+#         write(lst_name.pop(), align='center', font=('Arial', 18, 'normal'))
+#         backward(260)
+#         speed(160)
+# penup()
+# goto(-20, - 20)
+# pendown()
+# write('* Victoria *', align='center', font=('Arial', 40, 'normal'))
+# hideturtle()
+# done()
 
 
 

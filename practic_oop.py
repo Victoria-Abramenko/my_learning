@@ -4489,3 +4489,46 @@ from urllib.parse import uses_relative
 # print(w.meta.__dict__)
 # # {'user': 'root', 'psw': '1234', 'meta': <__main__.Model.Meta object at 0x000001EBB67A2BA0>}
 # # {'access': 'root@1234', 't': 'Какой-то заголовок'}
+
+# # ____________________   Метаклассы  __________________
+# # Метакласс объект, от которого образуется объект (объект, классы) - он на вершине этой иерархии
+# # метакласс это объект type(если передать один параметр), если передать несколько параметров, то он уже динамически
+# # создает класс
+# # type используется для динамического создания класса
+# # синтаксис type('имя класса', (кортеж базовых классов), {словарь с атрибутами этого класса})
+# # на примере класса координат
+# p = type('Point', (), {'max_coords' : 100, 'min_coords' : 0}) # динамическое создание класса Point
+# print(p.__dict__)
+# # {'max_coords': 100, 'min_coords': 0, '__module__': '__main__', '__dict__': <attribute '__dict__' of 'Point' objects>,
+# # '__weakref__': <attribute '__weakref__' of 'Point' objects>, '__doc__': None}
+#
+# # можно создать экземпляр этого класса
+# pt = p()
+# print(pt.__dict__)  # {} пустой, так как нет никаких локальных атрибутов
+
+# # также можно создавать и наследуемый класс в кортеже указать эти базовые классы
+# class B1:
+#     pass
+#
+# class B2:
+#     pass
+#
+# p = type('Point', (B1, B2), {'max_coords' : 100, 'min_coords' : 0})
+# print(p.__mro__) # (<class '__main__.Point'>, <class '__main__.B1'>, <class '__main__.B2'>, <class 'object'>) # порядок наследования
+
+# # чтобы в таком классе создать метод, он прописывается отдельно, а затем ссылка добавляется в параметры
+# def method1(self):
+#     print(self.__dict__)
+#
+# P = type('Point', (), {'max_coords' : 100, 'min_coords' : 0, 'method1' : method1})
+#
+# pt = P()
+# pt.method1()  # {}
+
+# # либо простую лямбда функцию
+# P = type('Point', (), {'max_coords' : 100, 'min_coords' : 0, 'method1' : lambda self: self.max_coords})
+#
+# pt = P()
+# print(pt.method1())  # 100
+
+
