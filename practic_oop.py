@@ -4531,4 +4531,59 @@ from urllib.parse import uses_relative
 # pt = P()
 # print(pt.method1())  # 100
 
+#______________________  Пользовательские метаклассы  ____________________
+# # пример создания собственного метакласса
+# # class Point:
+# #     max_coords = 100
+# #     min_coords = 0
+# # метакласс можно представить в виде функции
+# def create_class_point(name, base, attrs): # принимает три параметра, имя класса, базовые классы, и словарь с атрибутами
+#     attrs.update({'max_coords' : 100, 'min_coords' : 0})  # добавляем атрибуты в класс
+#     return type(name, base, attrs)
+#
+# # затем создаем класс, и в параметрах указываем специальный метод metaclass, передаем ему ссылку на функцию
+# class Point(metaclass=create_class_point):
+#     def get_coords(self):  # также добавляется в словарь attrs, поэтому можно обратиться и к методу
+#         return (0, 0)
+#
+# pt = Point()
+# print(pt.max_coords)
+# print(pt.get_coords())
+# # 100
+# # (0, 0)
 
+# # функции в качестве метаклассов на практике не используются, для этого используют классы
+# class Meta(type):  # т.е. класс, который наследуется от type
+#     def __init__(cls, name, base, attrs):  # в инициализаторе (ссылка на созданный класс, имя класса, кортеж базовых
+#     # классов, словарь атрибутов)
+#     # лучше на всякий случай обратиться к инициализатору базового класса, и передать ему параметры
+#         super().__init__(name, base, attrs)
+#         cls.max_coords = 100  # динамически добавляем необходимые атрибуты (добавляем к созданному классу, поэтому cls)
+#         cls.min_coords = 0
+#
+# class Point(metaclass=Meta):  # в метод передать этот класс
+#     def get_coords(self):
+#         return (0, 0)
+#
+# pt = Point()
+# print(pt.max_coords)
+# print(pt.get_coords())
+# # # 100
+# # # (0, 0)
+
+# # для более тонкой настройки лучше использовать метод new
+# class Meta(type):
+#     def __new__(cls, name, base, attrs):  # так как он срабатывает до создания экземпляра класса
+#         attrs.update({'max_coords' : 100, 'min_coords' : 0})
+#         return type.__new__(cls, name, base, attrs)  # у объекта type явно вызовем метод __new__
+#
+#
+# class Point(metaclass=Meta):
+#     def get_coords(self):
+#         return (0, 0)
+#
+# pt = Point()
+# print(pt.max_coords)
+# print(pt.get_coords())
+# # # 100
+# # # (0, 0)
