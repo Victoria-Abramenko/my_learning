@@ -13,7 +13,7 @@
 #    бурма
 #    Васька
 #    5
-from urllib.parse import uses_relative
+# from urllib.parse import uses_relative
 
 
 # ___________  Инкапсуляция  ______________
@@ -4587,3 +4587,45 @@ from urllib.parse import uses_relative
 # print(pt.get_coords())
 # # # 100
 # # # (0, 0)
+
+# ______________  Примеры использования метаклассов в Django  _______
+# Создается класс с атрибутами, название которых, соответствует заголовкам в таблице базы данных
+# за счет мета класса, в созданном экземпляре класса атрибуты имеют определенное значение
+# class Meta(type):
+#     def create_local_attrs(self, *args, **kwargs): # для произвольного числа параметров
+#         # здесь будем формировать локальные свойства класса
+#         for key, value in self.class_attrs.items():
+#             self.__dict__[key] = value
+#
+#
+#     def __init__(cls, name, bases, attrs):
+#         cls.class_attrs = attrs  # добавим атрибут, который будет ссылаться на словарь с атрибутами класса
+#         cls.__init__ = Meta.create_local_attrs # добавим в класс инициализатор, который будет ссылаться на функцию
+#
+#
+#
+# class Women(metaclass=Meta):
+#     title = 'Заголовок'
+#     content = 'Какой-то контент'
+#     photo = 'Путь к фото'
+#
+# w = Women()
+# print(w.__dict__)
+# # {'__module__': '__main__', '__qualname__': 'Women', '__firstlineno__': 4607, 'title': 'Заголовок',
+# # 'content': 'Какой-то контент', 'photo': 'Путь к фото', '__static_attributes__': ()}
+
+# # как этот класс выглядел бы без метакласса
+# class Women:
+#     class_attrs = {'title' : 'Заголовок', 'content' : 'Какой-то контент', 'photo' : 'Путь к фото'}
+#     title = 'Заголовок'
+#     content = 'Какой-то контент'
+#     photo = 'Путь к фото'
+#
+#     def __init__(self, *args, **kwargs):
+#         for key, value in self.class_attrs.items():
+#             self.__dict__[key] = value
+#
+# w = Women()
+# print(w.__dict__)  # {'title': 'Заголовок', 'content': 'Какой-то контент', 'photo': 'Путь к фото'}
+# это общий принцип реализации API ORM Django
+
