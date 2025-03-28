@@ -2277,14 +2277,7 @@ count = 0
 n = 0
 lst = []
 for i in range(len(numbers)):
-    for j, v in enumerate(numbers):
-        n = min(numbers)
-        ind = numbers.index(n)
-        if v > n:
-            lst[j] = n
-            lst[ind] = v
-        else:
-            continue
+    if lst[i] > lst[i + 1]
 
 print(lst)
 

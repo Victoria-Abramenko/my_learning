@@ -4629,3 +4629,90 @@
 # print(w.__dict__)  # {'title': 'Заголовок', 'content': 'Какой-то контент', 'photo': 'Путь к фото'}
 # это общий принцип реализации API ORM Django
 
+# # __________________  Введение в Data Classes  ______________________
+# # Data Classes - классы данных
+# # Чтобы создать класс с атрибутами с данными, и отображением их в консоли, необходим такой код
+# class Things:
+#     def __init__(self, name, weight, price):
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#
+#     def __repr__(self):
+#         return f"Класс Things: {self.__dict__}"
+#
+# t = Things('Книга по python', 200, 566.30)
+# print(t)  # Класс Things: {'name': 'Книга по python', 'weight': 200, 'price': 566.30}
+
+# С версии python 3.7+ оптимизировали данного типа классы. Значительно сокращает программный код
+
+# # # 1 способ через декоратор database модуля dataclasses
+# from dataclasses import dataclass
+# from pprint import pprint
+# @dataclass
+# class Things:
+#     # чтобы эти атрибуты задать в инициализаторе, обязательно необходимо прописать аннотацию
+#     name : str
+#     weight : int
+#     price : float
+#
+# t = Things('Книга по python', 200, 566.30)
+# # print(t)  # Things(name='Книга по python', weight=200, price=566.3)
+#
+# # декоратор автоматически добавил магический метод __repr__, и инициализатор... убедиться в этом можно использовав pprint()
+# pprint(Things.__dict__)
+# # mappingproxy({'__annotations__': {'name': <class 'str'>,
+# #                                   'price': <class 'float'>,
+# #                                   'weight': <class 'int'>},
+# #               '__dataclass_fields__': {'name': Field(name='name',type=<class 'str'>,default=<dataclasses._MISSING_TYPE object at 0x000001C91B9FC6E0>,default_factory=<dataclasses._MISSING_TYPE object at 0x000001C91B9FC6E0>,init=True,repr=True,hash=None,compare=True,metadata=mappingproxy({}),kw_only=False,_field_type=_FIELD),
+# #                                        'price': Field(name='price',type=<class 'float'>,default=<dataclasses._MISSING_TYPE object at 0x000001C91B9FC6E0>,default_factory=<dataclasses._MISSING_TYPE object at 0x000001C91B9FC6E0>,init=True,repr=True,hash=None,compare=True,metadata=mappingproxy({}),kw_only=False,_field_type=_FIELD),
+# #                                        'weight': Field(name='weight',type=<class 'int'>,default=<dataclasses._MISSING_TYPE object at 0x000001C91B9FC6E0>,default_factory=<dataclasses._MISSING_TYPE object at 0x000001C91B9FC6E0>,init=True,repr=True,hash=None,compare=True,metadata=mappingproxy({}),kw_only=False,_field_type=_FIELD)},
+# #               '__dataclass_params__': _DataclassParams(init=True,repr=True,eq=True,order=False,unsafe_hash=False,frozen=False,match_args=True,kw_only=False,slots=False,weakref_slot=False),
+# #               '__dict__': <attribute '__dict__' of 'Things' objects>,
+# #               '__doc__': 'Things(name: str, weight: int, price: float)',
+# #               '__eq__': <function Things.__eq__ at 0x000001C91BA3BA60>,
+# #               '__firstlineno__': 4652,
+# #               '__hash__': None,
+# #               '__init__': <function Things.__init__ at 0x000001C91B7E2CA0>,
+# #               '__match_args__': ('name', 'weight', 'price'),
+# #               '__module__': '__main__',
+# #               '__replace__': <function _replace at 0x000001C91BA39EE0>,
+# #               '__repr__': <function Things.__repr__ at 0x000001C91BA3BB00>,
+# #               '__static_attributes__': (),
+# #               '__weakref__': <attribute '__weakref__' of 'Things' objects>})
+
+# # за счет магического метода __eq__можно сравнивать экземпляры класса
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Things:
+#     name : str
+#     weight : int
+#     price : float
+#
+# t1 = Things('Книга по python', 200, 566.30)
+# t2 = Things('Книга по ООП', 300, 650.80)
+# t3 = Things('Книга по python', 200, 566.30)
+# print(t1 == t2)  # False
+# print(t1 == t3)  # True
+# # так как магический метод переопределен, сравнение происходит по значениям атрибутов
+# # (name, weight, price) == (name, weight, price)
+#
+# # этот магический метод можно переопределить, например проверять только на одно значение, например название
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Things:
+#     name : str
+#     weight : int
+#     price : float
+#
+#     def __eq__(self, other):
+#         return self.name == other.name
+#
+# t1 = Things('Книга по python', 200, 566.30)
+# t2 = Things('Книга по ООП', 300, 650.80)
+# t3 = Things('Книга по python', 300, 896.30)
+# print(t1 == t2)  # False
+# print(t1 == t3)  # True
+
