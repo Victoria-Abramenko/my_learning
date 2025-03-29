@@ -136,6 +136,26 @@
 # hideturtle()
 # done()
 
+# # # _____________  практика 7  _____________
+# import turtle
+#
+# def design():
+#     colors = ['#83D9DC', '#B0EFEF', '#C997C6', '#F498C2', '#FCDCDF', '#FEFFBF']
+#     pen = turtle.Turtle()
+#     pen.speed(20)
+#     turtle.bgcolor('#6EB5FF')
+#     pen.pensize(3)
+#
+#     for i in range(35):
+#         pen.color(colors[i % 6])
+#         pen.circle(100)
+#         pen.left(25)
+#
+#     pen.hideturtle()
+#
+# design()
+#
+# turtle.done()
 
 
 

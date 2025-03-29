@@ -4716,3 +4716,96 @@
 # print(t1 == t2)  # False
 # print(t1 == t3)  # True
 
+# т.е., если в классе не прописан магический метод, он автоматически подставляет свой __init__(), __repr__(), __eq__(),
+
+# # можно также указывать значение по умолчанию, но обязательно последний параметр
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Things:
+#     name : str
+#     weight : int
+#     price : float = 0
+#
+#     def __eq__(self, other):
+#         return self.name == other.name
+#
+# t1 = Things('Книга по python', 200)
+# print(t1)  # Things(name='Книга по python', weight=200, price=0)
+
+# # иначе возникнет ошибка
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Things:
+#     name : str
+#     price : float = 0
+#     weight : int
+#
+#
+#     def __eq__(self, other):
+#         return self.name == other.name
+#
+# t1 = Things('Книга по python', 200)
+# print(t1)  # TypeError: non-default argument 'weight' follows default argument 'price'
+
+# # также параметром по умолчанию может быть изменяемый объект(например, список), и с этим также могут возникнуть проблемы
+# # добавим параметр размерность dims
+# class Things:
+#     def __init__(self, name, weight, price, dims = []):
+#         self.name = name
+#         self.weight = weight
+#         self.price = price
+#         self.dims = dims
+#
+#     def __repr__(self):
+#         return f"Класс Things: {self.__dict__}"
+#
+# t = Things('Книга по python', 200, 566.30)
+# t.dims.append(10)
+# t2 = Things('Книга по ООП', 300, 450.30)
+# print(t)  # Класс Things: {'name': 'Книга по python', 'weight': 200, 'price': 566.3, 'dims': [10]}
+# print(t2)  # Класс Things: {'name': 'Книга по ООП', 'weight': 300, 'price': 450.3, 'dims': [10]}
+# # в экземпляре класса t2 также есть значение 'dims': [10], хотя мы его не указывали, так как в классе self.dims
+# # ссылается на список, он получается общим для всех экземпляров
+
+# # по этой причине нельзя присваивать по умолчанию изменяемый объект
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Things:
+#     name : str
+#     weight : int
+#     price: float
+#     dims: list = []
+#
+#
+#     def __eq__(self, other):
+#         return self.name == other.name
+#
+# t1 = Things('Книга по python', 200)
+# print(t1) # ValueError: mutable default <class 'list'> for field dims is not allowed: use default_factory
+
+# если необходимо создать пустой список для каждого экземпляра, используется специальная функция field (из модуля dataclass)
+# from dataclasses import dataclass, field
+#
+#
+# @dataclass
+# class Things:
+#     name : str
+#     weight : int
+#     price: float
+#     dims: list = field(default_factory=list) # так создается локальный атрибут, которому присваивается функция list,
+#     # возвращающая пустой список
+#
+#
+#     def __eq__(self, other):
+#         return self.name == other.name
+#
+# t1 = Things('Книга по python', 200, 555.50)
+# t1.dims.append(10)
+# t2 = Things('Книга по ООП', 300, 450.30)
+# print(t1)  # Things(name='Книга по python', weight=200, price=555, dims=[])
+# print(t2)  # Things(name='Книга по ООП', weight=300, price=450.3, dims=[]) # у второго экземпляра список пустой, то есть
+# # для каждого экземпляра класса свой список, поскольку она вызывается внутри инициализатора, то для каждого объекта
+# создается свой список
