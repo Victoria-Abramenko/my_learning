@@ -4809,3 +4809,137 @@
 # print(t2)  # Things(name='Книга по ООП', weight=300, price=450.3, dims=[]) # у второго экземпляра список пустой, то есть
 # # для каждого экземпляра класса свой список, поскольку она вызывается внутри инициализатора, то для каждого объекта
 # создается свой список
+
+# # чтобы в dataclass добавить вычисляемый параметр, необходимо воспользоваться магическим методом __post_init__(этот
+# # метод автоматически вызывается после завершения инициализатора, поэтому в нем уже можно использовать созданные локальные параметры)
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Vector3d:
+#     x : int
+#     y : int
+#     z : int
+#
+#     def __post_init__(self):
+#         self.length = (self.x * self.x + self.y * self.y + self.z * self.z) ** 0.5
+#
+# v = Vector3d(1, 2, 3)
+# print(v)  # Vector3d(x=1, y=2, z=3) так как в магическом методе __repr__ формируется из явно указанных атрибутов
+# print(v.__dict__)  # {'x': 1, 'y': 2, 'z': 3, 'length': 3.7416573867739413}
+
+# # чтобы его добавить также, можно воспользоваться функцией field. Параметр init в значении False означает, что этот
+# # атрибут не будет передаваться при создании экземпляра класса
+# from dataclasses import dataclass, field
+#
+# @dataclass
+# class Vector3d:
+#     x : int
+#     y : int
+#     z : int
+#     length: float = field(init=False)
+#
+#     def __post_init__(self):
+#         self.length = (self.x * self.x + self.y * self.y + self.z * self.z) ** 0.5
+#
+# v = Vector3d(1, 2, 3) # здесь по-прежнему передается только три параметра
+# print(v) # Vector3d(x=1, y=2, z=3, length=3.7416573867739413) теперь отображаются все атрибуты
+
+# другие параметры функции field
+# repr=False не добавлять атрибут в магический метод __repr__
+# compare=False не добавлять атрибут в сравнение объектов
+# default - значение по умолчанию
+# from dataclasses import dataclass, field
+#
+# @dataclass
+# class Vector3d:
+#     x : int = field(repr=False)
+#     y : int
+#     z : int
+#     length: float = field(init=False)
+#
+#     def __post_init__(self):
+#         self.length = (self.x * self.x + self.y * self.y + self.z * self.z) ** 0.5
+#
+# v = Vector3d(1, 2, 3)
+# print(v)  # Vector3d(y=2, z=3, length=3.7416573867739413) x не отображается
+
+# from dataclasses import dataclass, field
+#
+# @dataclass
+# class Vector3d:
+#     x : int
+#     y : int
+#     z : int = field(compare=False)
+#     length: float = field(init=False, compare=False)
+#
+#     def __post_init__(self):
+#         self.length = (self.x * self.x + self.y * self.y + self.z * self.z) ** 0.5
+#
+# v1 = Vector3d(1, 2, 3)
+# v2 = Vector3d(1, 2, 5)
+# print(v1 == v2)  # True так как параметры z и length исключены из сравнения
+
+# # вычисляемый параметр также можно сделать в зависимости от условий, если calc_len = True, вычисляем, иначе = 0
+# from dataclasses import dataclass, field
+#
+# @dataclass
+# class Vector3d:
+#     x : int
+#     y : int
+#     z : int
+#     calc_len: bool = True
+#     length: float = field(init=False)
+#
+#     def __post_init__(self):
+#         self.length = (self.x * self.x + self.y * self.y + self.z * self.z) ** 0.5 if self.calc_len else 0
+#
+# v1 = Vector3d(1, 2, 3)
+# v2 = Vector3d(1, 2, 5, False)
+# print(v1)  # Vector3d(x=1, y=2, z=3, calc_len=True, length=3.7416573867739413)
+# print(v2)  # Vector3d(x=1, y=2, z=5, calc_len=False, length=0)
+
+# # используя аннотацию InitVar, он автоматически подставляет этот атрибут в магический метод __post_init__
+# from dataclasses import dataclass, field, InitVar
+#
+# @dataclass
+# class Vector3d:
+#     x : int
+#     y : int
+#     z : int
+#     calc_len: InitVar[bool] = True
+#     length: float = field(init=False, default=0)
+#
+#     def __post_init__(self, calc_len: bool):
+#         if calc_len:
+#             self.length = (self.x * self.x + self.y * self.y + self.z * self.z) ** 0.5
+#
+# v1 = Vector3d(1, 2, 3)
+# v2 = Vector3d(1, 2, 5, False)
+# print(v1)  # Vector3d(x=1, y=2, z=3, calc_len=True, length=3.7416573867739413)
+# print(v2)  # Vector3d(x=1, y=2, z=5, length=0) так как длина не вычислялась, подставилось значение по умолчанию
+
+# у декоратора @dataclass также есть параметры
+# init = True будет формироваться инициализатор = False не будет формироваться инициализатор
+# repr = True будет формироваться __repr__ = False не будет формироваться __repr__
+# eq = True будет формироваться __eq__ = False не будет формироваться __eq__
+# order  = True будет формироваться операторы сравнения в классе = False не будет формироваться операторы сравнения в классе
+# unsafe_hash  = True будет формироваться __hash__ для вычисления хэша объекта = False не будет формироваться __hash__ для вычисления хэша объекта
+# frozen = True замораживает параметры объектов, чтобы их нельзя было изменить = False не замораживает
+# slots = True позволяет задает атрибуты в коллекцию slots = False не позволяет
+
+# dataclass при наследовании
+from dataclasses import dataclass, field, InitVar
+from typing import Any
+
+@dataclass
+class Goods:
+    uid : Any
+    price : Any = None
+    weight : Any = None
+
+@dataclass
+class Books(Goods):
+    title : str = ""
+
+
+
