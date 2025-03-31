@@ -4926,20 +4926,203 @@
 # unsafe_hash  = True будет формироваться __hash__ для вычисления хэша объекта = False не будет формироваться __hash__ для вычисления хэша объекта
 # frozen = True замораживает параметры объектов, чтобы их нельзя было изменить = False не замораживает
 # slots = True позволяет задает атрибуты в коллекцию slots = False не позволяет
+# 
+# # _________________________  dataclass при наследовании  __________________
+# from dataclasses import dataclass, field, InitVar
+# from typing import Any
+# 
+# @dataclass
+# class Goods:
+#     uid : Any
+#     price : Any = None
+#     weight : Any = None
+# 
+# @dataclass # __init__(self, uid : Any, price: float = 0, weight: int | float = 0, title : str = '', author : str = '')
+# class Books(Goods):
+#     title : str = ''
+#     author : str = ''
+#     price: float = 0 # так как эти атрибуты наследуются от базового класса и переопределяются, в инициализаторе вначале будут идти они
+#     weight: int | float = 0
+# 
+# b = Books(1)
+# b2 = Books(2, 100, 100, 'ООП на python', 'Балакирев С.М.')
+# print(b)  # Books(uid=1, price=0, weight=0, title='', author='')
+# print(b2)  # Books(uid=2, price=100, weight=100, title='ООП на python', author='Балакирев С.М.')
 
-# dataclass при наследовании
-from dataclasses import dataclass, field, InitVar
+# # чтобы задать автоматический uid(подсчет порядкового номера, для каждого экземпляра класса)
+# from dataclasses import dataclass, field, InitVar
+# from typing import Any
+#
+# @dataclass  # игнорирует параметры, которым не задана аннотация
+# class Goods:
+#     counter_uid = 0
+#     uid : int = field(init=False) # исключаем этот параметр из инициализации
+#     price : Any = None
+#     weight : Any = None
+#
+#     def __post_init__(self): # при каждом создании экземпляра класса, счетчик будет увеличиваться на 1
+#         Goods.counter_uid += 1
+#         self.uid = Goods.counter_uid
+#
+# @dataclass
+# class Books(Goods):
+#     title : str = ''
+#     author : str = ''
+#     price: float = 0
+#     weight: int | float = 0
+#
+# b = Books()
+# b2 = Books(100, 100, 'ООП на python', 'Балакирев С.М.')
+# print(b)  # Books(uid=1, price=0, weight=0, title='', author='')
+# print(b2)  # Books(uid=2, price=100, weight=100, title='ООП на python', author='Балакирев С.М.')
+
+# # однако, если прописать пост инит в дочернем классе, возникнет ошибка, так как родительский пост инит не будет вызван,
+# # а значит и не будет сформирован параметр uid
+# from dataclasses import dataclass, field, InitVar
+# from typing import Any
+# 
+# @dataclass
+# class Goods:
+#     counter_uid = 0
+#     uid : int = field(init=False)
+#     price : Any = None
+#     weight : Any = None
+# 
+#     def __post_init__(self):
+#         Goods.counter_uid += 1
+#         self.uid = Goods.counter_uid
+# 
+# @dataclass
+# class Books(Goods):
+#     title : str = ''
+#     author : str = ''
+#     price: float = 0
+#     weight: int | float = 0
+# 
+#     def __post_init__(self):
+#         print('__post_init__ - book')
+# 
+# b = Books()
+# b2 = Books(100, 100, 'ООП на python', 'Балакирев С.М.')
+# print(b)
+# print(b2)
+# # AttributeError: 'Books' object has no attribute 'uid'
+# # __post_init__ - book
+# # __post_init__ - book
+
+# чтобы исправить ошибку, нужно явно вызвать инит из базового класса
+#  print(b2)  # Books(uid=2, price=100, weight=100, title='ООП на python', author='Балакирев С.М.')
+
+# # чтобы задать автоматический uid(подсчет порядкового номера, для каждого экземпляра класса)
+# from dataclasses import dataclass, field, InitVar
+# from typing import Any
+#
+# @dataclass  # игнорирует параметры, которым не задана аннотация
+# class Goods:
+#     counter_uid = 0
+#     uid : int = field(init=False) # исключаем этот параметр из инициализации
+#     price : Any = None
+#     weight : Any = None
+#
+#     def __post_init__(self): # при каждом создании экземпляра класса, счетчик будет увеличиваться на 1
+#         Goods.counter_uid += 1
+#         self.uid = Goods.counter_uid
+#
+# @dataclass
+# class Books(Goods):
+#     title : str = ''
+#     author : str = ''
+#     price: float = 0
+#     weight: int | float = 0
+#
+# b = Books()
+# b2 = Books(100, 100, 'ООП на python', 'Балакирев С.М.')
+# print(b)  # Books(uid=1, price=0, weight=0, title='', author='')
+# print(b2)  # Books(uid=2, price=100, weight=100, title='ООП на python', author='Балакирев С.М.')
+
+# # # однако, если прописать пост инит в дочернем классе, возникнет ошибка, так как родительский пост инит не будет вызван,
+# 
+# from dataclasses import dataclass, field, InitVar
+# from typing import Any
+# 
+# @dataclass
+# class Goods:
+#     counter_uid = 0
+#     uid : int = field(init=False)
+#     price : Any = None
+#     weight : Any = None
+# 
+#     def __post_init__(self):
+#         Goods.counter_uid += 1
+#         self.uid = Goods.counter_uid
+# 
+# @dataclass
+# class Books(Goods):
+#     title : str = ''
+#     author : str = ''
+#     price: float = 0
+#     weight: int | float = 0
+# 
+#     def __post_init__(self):
+#         super().__post_init__() # явно вызвать этот метод, а инициализатор вызывается автоматически при использовании декоратора
+#         print('__post_init__ - book')
+# 
+# b = Books()
+# b2 = Books(100, 100, 'ООП на python', 'Балакирев С.М.')
+# print(b)  # Books(uid=1, price=0, weight=0, title='', author='')
+# print(b2)  # Books(uid=2, price=100, weight=100, title='ООП на python', author='Балакирев С.М.')
+
+# # добавим класс с методами для усложнения программы
+# from dataclasses import dataclass, field, InitVar
+# from typing import Any
+#
+# class GoodsMethodClass:
+#     @staticmethod
+#     def get_measure():
+#         return [0, 0, 0, 0]
+#
+# @dataclass
+# class Goods:
+#     counter_uid = 0
+#     uid : int = field(init=False)
+#     price : Any = None
+#     weight : Any = None
+#
+#
+#     def __post_init__(self):
+#         Goods.counter_uid += 1
+#         self.uid = Goods.counter_uid
+#
+# @dataclass
+# class Books(Goods):
+#     title : str = ''
+#     author : str = ''
+#     price: float = 0
+#     weight: int | float = 0
+#     measure : list = field(default_factory=GoodsMethodClass.get_measure)
+#
+#     def __post_init__(self):
+#         super().__post_init__() # явно вызвать этот метод, а инициализатор вызывается автоматически при использовании декоратора
+#         print('__post_init__ - book')
+#
+# b = Books()
+# print(b)  # Books(uid=1, price=0, weight=0, title='', author='', measure=[0, 0, 0, 0])
+
+# также dataclass можно создавать при помощи функции make_dataclass
+# параметры функции:
+# cls_name - название нового класса в виде строки
+# fields - поля (локальные атрибуты) объектов класса
+# * - произвольный набор позиционных аргументов
+# bases - список базовых классов
+# namespace - словарь для определения атрибутов самого класса
+
+from dataclasses import dataclass, field, InitVar, make_dataclass
 from typing import Any
 
-@dataclass
-class Goods:
-    uid : Any
-    price : Any = None
-    weight : Any = None
+CarData = make_dataclass('CarData', [('model', str),
+                                     'max_speed',
+                                     ('price', float, field(default=0))],
+                         namespace={'get_max_speed' : lambda self: self.max_speed})
 
-@dataclass
-class Books(Goods):
-    title : str = ""
-
-
-
+car = CarData('BMW', 256, 4096)
+print(car) # CarData(model='BMW', max_speed=256, price=4096)
